@@ -56,5 +56,6 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
                 .filter(categoryEntity -> categoryEntity.getParentCid().equals(root.getCatId()))
                 .peek(categoryEntity -> categoryEntity.setChildren(getChildren(categoryEntity,all)))
                 .sorted(Comparator.comparingInt(menu -> (menu.getSort() == null ? 0 : menu.getSort())))
-                .collect(Collectors.toList()); }
+                .collect(Collectors.toList());
+    }
 }

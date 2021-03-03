@@ -25,7 +25,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
     public PageUtils queryPage(Map<String, Object> params) {
         IPage<CategoryEntity> page = this.page(
                 new Query<CategoryEntity>().getPage(params),
-                new QueryWrapper<CategoryEntity>()
+                new QueryWrapper<>()
         );
 
         return new PageUtils(page);
@@ -41,6 +41,14 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
                 .peek(menu-> menu.setChildren(getChildren(menu,entities)))
                 .sorted(Comparator.comparingInt(menu -> (menu.getSort() == null ? 0 : menu.getSort())))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public void removeMenuByIds(List<Long> catIds) {
+        //TODO  检查当前删除的菜单，是否被别的地方引用
+
+        //逻辑删除
+        baseMapper.deleteBatchIds(catIds);
     }
 
     /**

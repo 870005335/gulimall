@@ -38,7 +38,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         // 组装成三级树形结构
         return entities.stream()
                 .filter(categoryEntity -> categoryEntity.getParentCid() == 0)
-                .peek((menu)-> menu.setChildren(getChildren(menu,entities)))
+                .peek(menu-> menu.setChildren(getChildren(menu,entities)))
                 .sorted(Comparator.comparingInt(menu -> (menu.getSort() == null ? 0 : menu.getSort())))
                 .collect(Collectors.toList());
     }

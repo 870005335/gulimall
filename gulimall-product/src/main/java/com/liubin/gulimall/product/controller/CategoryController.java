@@ -85,4 +85,15 @@ public class CategoryController {
         return R.ok();
     }
 
+    /**
+     * 根据分类Id批量修改
+     * @param categoryEntities
+     * @return
+     */
+    @RequestMapping("update/batch")
+    public R updateBatch(@RequestBody CategoryEntity[] categoryEntities) {
+        categoryService.updateBatchById(Arrays.asList(categoryEntities));
+        return R.ok();
+    }
+
 }

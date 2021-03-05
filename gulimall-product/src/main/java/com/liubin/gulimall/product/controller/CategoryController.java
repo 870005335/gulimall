@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.liubin.gulimall.product.entity.CategoryEntity;
 import com.liubin.gulimall.product.service.CategoryService;
-import com.liubin.common.utils.PageUtils;
 import com.liubin.common.utils.R;
 
 

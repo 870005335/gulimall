@@ -35,5 +35,14 @@ public interface CategoryService extends IService<CategoryEntity> {
      * @return
      **/
     void removeMenuByIds(List<Long> catIds);
+
+    /**
+     * @description: 根据属性分组中的分类id查询分类id路径
+     * @param catId
+     * @author: liubin
+     * @date: 2021/3/7 22:29
+     * @return: java.lang.Long[]
+     */
+    Long[] queryCategoryPath(Long catId);
 }
 

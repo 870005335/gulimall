@@ -2,9 +2,7 @@ package com.liubin.gulimall.product.service.impl;
 
 import org.springframework.stereotype.Service;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -49,6 +47,30 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
 
         //逻辑删除
         baseMapper.deleteBatchIds(catIds);
+    }
+
+    @Override
+    public Long[] queryCategoryPath(Long catId) {
+        List<Long> catPath = new ArrayList<>();
+        queryCategoryPath(catId, catPath);
+        Collections.reverse(catPath);
+        return catPath.toArray(new Long[0]);
+    }
+
+    /**
+     * @description: 根据分类Id递归查询分类id路径
+     * @param catId
+     * @param catPath
+     * @author: liubin
+     * @date: 2021/3/7 22:32
+     * @return: void
+     */
+    private void queryCategoryPath(Long catId, List<Long> catPath) {
+        catPath.add(catId);
+        CategoryEntity categoryEntity = baseMapper.selectById(catId);
+        if (categoryEntity.getParentCid() != 0) {
+            queryCategoryPath(categoryEntity.getParentCid(), catPath);
+        }
     }
 
     /**

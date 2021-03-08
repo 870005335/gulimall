@@ -47,7 +47,7 @@ public class CategoryBrandRelationServiceImpl extends ServiceImpl<CategoryBrandR
         // 根据分类Id查询分类名称
         CategoryEntity categoryEntity = categoryDao.selectById(categoryBrandRelation.getCatelogId());
         if (categoryEntity != null) {
-            categoryBrandRelation.setBrandName(categoryEntity.getName());
+            categoryBrandRelation.setCatelogName(categoryEntity.getName());
         }
         this.save(categoryBrandRelation);
     }

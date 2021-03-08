@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
  * @author liubin
@@ -14,6 +15,7 @@ import org.springframework.context.annotation.Configuration;
  * @createTime 2021年03月07日 23:10:00
  */
 @Configuration
+@EnableTransactionManagement
 public class MybatisPlusConfig {
 
     @Bean

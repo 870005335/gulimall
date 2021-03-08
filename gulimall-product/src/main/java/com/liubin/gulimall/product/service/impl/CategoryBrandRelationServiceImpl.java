@@ -1,5 +1,6 @@
 package com.liubin.gulimall.product.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.liubin.gulimall.product.dao.BrandDao;
 import com.liubin.gulimall.product.dao.CategoryDao;
 import com.liubin.gulimall.product.entity.BrandEntity;
@@ -50,5 +51,19 @@ public class CategoryBrandRelationServiceImpl extends ServiceImpl<CategoryBrandR
             categoryBrandRelation.setCatelogName(categoryEntity.getName());
         }
         this.save(categoryBrandRelation);
+    }
+
+    @Override
+    public void updateBrandRelation(Long brandId, String name) {
+        CategoryBrandRelationEntity updateEntity = new CategoryBrandRelationEntity();
+        updateEntity.setBrandName(name);
+        this.update(updateEntity, new UpdateWrapper<CategoryBrandRelationEntity>().eq("brand_id", brandId));
+    }
+
+    @Override
+    public void updateCategoryRelation(Long catId, String name) {
+        CategoryBrandRelationEntity updateEntity = new CategoryBrandRelationEntity();
+        updateEntity.setCatelogName(name);
+        this.update(updateEntity, new UpdateWrapper<CategoryBrandRelationEntity>().eq("catelog_id", catId));
     }
 }

@@ -44,5 +44,14 @@ public interface CategoryService extends IService<CategoryEntity> {
      * @return: java.lang.Long[]
      */
     Long[] queryCategoryPath(Long catId);
+
+    /**
+     * @description: 更新分类信息并维护中间表
+     * @param category
+     * @author: liubin
+     * @date: 2021/3/8 23:11
+     * @return: void
+     */
+    void updateCategoryAndRelation(CategoryEntity category);
 }
 

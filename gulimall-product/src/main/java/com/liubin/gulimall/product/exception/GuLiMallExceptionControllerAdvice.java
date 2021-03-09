@@ -1,5 +1,6 @@
 package com.liubin.gulimall.product.exception;
 
+import com.alibaba.fastjson.JSON;
 import com.liubin.common.enums.BizCodeEnum;
 import com.liubin.common.utils.R;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +33,7 @@ public class GuLiMallExceptionControllerAdvice {
 
     @ExceptionHandler(value = Throwable.class)
     public R handleException(Throwable throwable) {
+        log.error(JSON.toJSONString(throwable));
         return R.error(BizCodeEnum.UNKNOW_EXCEPTION.getCode(), BizCodeEnum.UNKNOW_EXCEPTION.getMsg());
     }
 }

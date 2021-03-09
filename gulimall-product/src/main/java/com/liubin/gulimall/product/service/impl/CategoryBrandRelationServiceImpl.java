@@ -17,6 +17,7 @@ import com.liubin.common.utils.Query;
 import com.liubin.gulimall.product.dao.CategoryBrandRelationDao;
 import com.liubin.gulimall.product.entity.CategoryBrandRelationEntity;
 import com.liubin.gulimall.product.service.CategoryBrandRelationService;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Service("categoryBrandRelationService")
@@ -39,6 +40,7 @@ public class CategoryBrandRelationServiceImpl extends ServiceImpl<CategoryBrandR
     }
 
     @Override
+    @Transactional
     public void saveDetail(CategoryBrandRelationEntity categoryBrandRelation) {
         // 根据品牌Id查询品牌名称
         BrandEntity brandEntity = brandDao.selectById(categoryBrandRelation.getBrandId());
@@ -54,6 +56,7 @@ public class CategoryBrandRelationServiceImpl extends ServiceImpl<CategoryBrandR
     }
 
     @Override
+    @Transactional
     public void updateBrandRelation(Long brandId, String name) {
         CategoryBrandRelationEntity updateEntity = new CategoryBrandRelationEntity();
         updateEntity.setBrandName(name);
@@ -61,6 +64,7 @@ public class CategoryBrandRelationServiceImpl extends ServiceImpl<CategoryBrandR
     }
 
     @Override
+    @Transactional
     public void updateCategoryRelation(Long catId, String name) {
         CategoryBrandRelationEntity updateEntity = new CategoryBrandRelationEntity();
         updateEntity.setCatelogName(name);

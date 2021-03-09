@@ -1,11 +1,11 @@
-锘縫ackage com.liubin.gulimall.product.vo;
+package com.liubin.gulimall.product.vo;
 
 import com.liubin.gulimall.product.entity.AttrEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 /**
- * @Description 鍟嗗搧灞炴�o瀵硅薄
+ * @Description 商品属性Vo对象
  * @Author liubin
  * @Date 2021/3/9 17:57
  * @Version 1.0

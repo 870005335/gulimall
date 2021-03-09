@@ -1,10 +1,10 @@
-锘縫ackage com.liubin.gulimall.product.vo;
+package com.liubin.gulimall.product.vo;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 /**
- * @Description TODO
+ * @Description 商品属性返回对象
  * @Author liubin
  * @Date 2021/3/9 18:52
  * @Version 1.0

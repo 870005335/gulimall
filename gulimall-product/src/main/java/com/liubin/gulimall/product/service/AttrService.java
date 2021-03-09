@@ -3,6 +3,7 @@ package com.liubin.gulimall.product.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.liubin.common.utils.PageUtils;
 import com.liubin.gulimall.product.entity.AttrEntity;
+import com.liubin.gulimall.product.vo.AttrRespVo;
 import com.liubin.gulimall.product.vo.AttrVo;
 
 import java.util.Map;
@@ -37,5 +38,14 @@ public interface AttrService extends IService<AttrEntity> {
      * @return {@link PageUtils}
      **/
     PageUtils queryAttrPage(Map<String, Object> params, String attrType, Long catelogId);
+
+    /**
+     * @description: 根据属性id查询详情
+     * @param attrId
+     * @author: liubin
+     * @date: 2021/3/10 0:15
+     * @return: com.liubin.gulimall.product.vo.AttrRespVo
+     */
+    AttrRespVo getAttrInfo(Long attrId);
 }
 

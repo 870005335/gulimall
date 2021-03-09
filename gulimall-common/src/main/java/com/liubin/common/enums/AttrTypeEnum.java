@@ -1,4 +1,4 @@
-﻿package com.liubin.common.enums;
+package com.liubin.common.enums;
 
 /**
  * @Description 商品属性类型枚举类

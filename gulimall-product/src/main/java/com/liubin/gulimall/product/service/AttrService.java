@@ -3,6 +3,7 @@ package com.liubin.gulimall.product.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.liubin.common.utils.PageUtils;
 import com.liubin.gulimall.product.entity.AttrEntity;
+import com.liubin.gulimall.product.vo.AttrVo;
 
 import java.util.Map;
 
@@ -16,5 +17,25 @@ import java.util.Map;
 public interface AttrService extends IService<AttrEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
+
+    /**
+     * @Author liubin
+     * @Description 自定义attr保存方法
+     * @Date 18:00 2021/3/9
+     * @param attr
+     * @return
+     **/
+    void saveAttr(AttrVo attr);
+
+    /**
+     * @Author liubin
+     * @Description 分页查询商品销售属性
+     * @Date 18:23 2021/3/9
+     * @param params
+     * @param attrType
+     * @param catelogId
+     * @return {@link PageUtils}
+     **/
+    PageUtils queryAttrPage(Map<String, Object> params, String attrType, Long catelogId);
 }
 

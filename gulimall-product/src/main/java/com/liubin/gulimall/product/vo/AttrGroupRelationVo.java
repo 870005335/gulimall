@@ -1,4 +1,4 @@
-﻿package com.liubin.gulimall.product.vo;
+package com.liubin.gulimall.product.vo;
 
 import lombok.Data;
 

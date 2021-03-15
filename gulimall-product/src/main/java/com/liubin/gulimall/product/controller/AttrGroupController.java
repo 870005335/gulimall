@@ -40,7 +40,7 @@ public class AttrGroupController {
     private AttrService attrService;
 
     @PostMapping("attr/relation/delete")
-    public R deleteRelation(AttrGroupRelationVo[] relationVos) {
+    public R deleteRelation(@RequestBody AttrGroupRelationVo[] relationVos) {
         attrGroupService.deleteRelation(Stream.of(relationVos).collect(Collectors.toList()));
         return R.ok();
     }

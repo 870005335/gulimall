@@ -168,7 +168,7 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
         // 查询中间表
         List<AttrAttrgroupRelationEntity> attrRelationList = attrAttrgroupRelationService.list(
                 new QueryWrapper<AttrAttrgroupRelationEntity>().eq("attr_group_id", attrGroupId));
-        if (attrRelationList != null) {
+        if (!CollectionUtils.isEmpty(attrRelationList)) {
             List<Long> attrIdList = attrRelationList
                     .stream()
                     .map(AttrAttrgroupRelationEntity::getAttrId)

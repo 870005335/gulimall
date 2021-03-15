@@ -1,15 +1,17 @@
 package com.liubin.gulimall.product.controller;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import com.liubin.gulimall.product.entity.AttrEntity;
+import com.liubin.gulimall.product.service.AttrService;
 import com.liubin.gulimall.product.service.CategoryService;
+import com.liubin.gulimall.product.vo.AttrGroupRelationVo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.liubin.gulimall.product.entity.AttrGroupEntity;
 import com.liubin.gulimall.product.service.AttrGroupService;
@@ -33,6 +35,21 @@ public class AttrGroupController {
 
     @Autowired
     private CategoryService categoryService;
+
+    @Autowired
+    private AttrService attrService;
+
+    @PostMapping("attr/relation/delete")
+    public R deleteRelation(AttrGroupRelationVo[] relationVos) {
+        attrGroupService.deleteRelation(Stream.of(relationVos).collect(Collectors.toList()));
+        return R.ok();
+    }
+
+    @GetMapping("{attrGroupId}/attr/relation")
+    public R attrRelation(@PathVariable("attrGroupId") Long attrGroupId) {
+        List<AttrEntity> attrList = attrService.getAttrRelation(attrGroupId);
+        return R.ok().put("data", attrList);
+    }
 
     /**
      * 列表

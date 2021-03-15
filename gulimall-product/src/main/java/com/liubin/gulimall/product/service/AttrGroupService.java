@@ -3,7 +3,9 @@ package com.liubin.gulimall.product.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.liubin.common.utils.PageUtils;
 import com.liubin.gulimall.product.entity.AttrGroupEntity;
+import com.liubin.gulimall.product.vo.AttrGroupRelationVo;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -26,5 +28,14 @@ public interface AttrGroupService extends IService<AttrGroupEntity> {
      * @return: com.liubin.common.utils.PageUtils
      */
     PageUtils queryPage(Map<String, Object> params, Integer categoryId);
+
+    /**
+     * @Author liubin
+     * @Description 删除属性分组和属性关联信息（支持批量）
+     * @Date 17:35 2021/3/15
+     * @param attrGroupRelationVoList
+     * @return
+     **/
+    void deleteRelation(List<AttrGroupRelationVo> attrGroupRelationVoList);
 }
 

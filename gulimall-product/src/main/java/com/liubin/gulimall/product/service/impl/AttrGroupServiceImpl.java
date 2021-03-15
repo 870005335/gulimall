@@ -1,22 +1,31 @@
 package com.liubin.gulimall.product.service.impl;
 
-import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.liubin.common.utils.PageUtils;
 import com.liubin.common.utils.Query;
+import com.liubin.gulimall.product.dao.AttrAttrGroupRelationDao;
 import com.liubin.gulimall.product.dao.AttrGroupDao;
+import com.liubin.gulimall.product.entity.AttrAttrgroupRelationEntity;
 import com.liubin.gulimall.product.entity.AttrGroupEntity;
 import com.liubin.gulimall.product.service.AttrGroupService;
+import com.liubin.gulimall.product.vo.AttrGroupRelationVo;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 
 @Service("attrGroupService")
 public class AttrGroupServiceImpl extends ServiceImpl<AttrGroupDao, AttrGroupEntity> implements AttrGroupService {
+
+    @Autowired
+    private AttrAttrGroupRelationDao relationDao;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -45,5 +54,15 @@ public class AttrGroupServiceImpl extends ServiceImpl<AttrGroupDao, AttrGroupEnt
                 wrapper
         );
         return new PageUtils(page);
+    }
+
+    @Override
+    public void deleteRelation(List<AttrGroupRelationVo> attrGroupRelationVoList) {
+        List<AttrAttrgroupRelationEntity> entities = attrGroupRelationVoList.stream().map(relation -> {
+            AttrAttrgroupRelationEntity relationEntity = new AttrAttrgroupRelationEntity();
+            BeanUtils.copyProperties(relation, relationEntity);
+            return relationEntity;
+        }).collect(Collectors.toList());
+        relationDao.deleteBatchRelation(entities);
     }
 }

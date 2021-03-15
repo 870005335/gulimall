@@ -6,6 +6,7 @@ import com.liubin.gulimall.product.entity.AttrEntity;
 import com.liubin.gulimall.product.vo.AttrRespVo;
 import com.liubin.gulimall.product.vo.AttrVo;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -47,5 +48,23 @@ public interface AttrService extends IService<AttrEntity> {
      * @return: com.liubin.gulimall.product.vo.AttrRespVo
      */
     AttrRespVo getAttrInfo(Long attrId);
+
+    /**
+     * @Author liubin
+     * @Description 自定义attr编辑方法
+     * @Date 10:32 2021/3/10
+     * @param attr
+     * @return
+     **/
+    void updateAttr(AttrVo attr);
+
+    /**
+     * @Author liubin
+     * @Description  根据属性分组id查询关联属性
+     * @Date 0:28 2021/3/14
+     * @param attrGroupId
+     * @return {@link List<AttrEntity>}
+     **/
+    List<AttrEntity> getAttrRelation(Long attrGroupId);
 }
 

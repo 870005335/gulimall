@@ -66,5 +66,15 @@ public interface AttrService extends IService<AttrEntity> {
      * @return {@link List<AttrEntity>}
      **/
     List<AttrEntity> getAttrRelation(Long attrGroupId);
+
+    /**
+     * @Author liubin
+     * @Description 根据属性分组id查询未关联属性
+     * @Date 18:24 2021/3/16
+     * @param attrGroupId
+     * @param params
+     * @return {@link PageUtils}
+     **/
+    PageUtils getAttrNoRelation(Long attrGroupId, Map<String, Object> params);
 }
 

@@ -142,6 +142,7 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void updateAttr(AttrVo attr) {
         AttrEntity update = new AttrEntity();
         // 更新属性表
@@ -176,6 +177,43 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
             attrEntityList = attrService.listByIds(attrIdList);
         }
         return attrEntityList;
+    }
+
+    @Override
+    public PageUtils getAttrNoRelation(Long attrGroupId, Map<String, Object> params) {
+        // 当前分组只能关联自己所属的分类里面的所有属性
+        AttrGroupEntity groupEntity = attrGroupService.getById(attrGroupId);
+        if (groupEntity != null) {
+            // 当前分组只能关联别的分组没用引用的属性
+            Long catelogId = groupEntity.getCatelogId();
+            // 查询分类Id下其他分组id
+            Wrapper<AttrGroupEntity> queryGroupWrapper = new QueryWrapper<AttrGroupEntity>()
+                    .eq("catelog_id", catelogId).ne("attr_group_id", attrGroupId);
+            List<AttrGroupEntity> otherGroupList = attrGroupService.list(queryGroupWrapper);
+            List<Long> attrIdList = new ArrayList<>();
+            if (!CollectionUtils.isEmpty(otherGroupList)) {
+                // 取出attrGroupId列表
+                List<Long> otherGroupIdList = otherGroupList
+                        .stream()
+                        .map(AttrGroupEntity::getAttrGroupId)
+                        .collect(Collectors.toList());
+                // 查询attrGroupId列表下关联的属性列表
+                Wrapper<AttrAttrgroupRelationEntity>  queryRelationWrapper = new QueryWrapper<AttrAttrgroupRelationEntity>()
+                        .in("attr_group_id", otherGroupIdList);
+                List<AttrAttrgroupRelationEntity> relationList = attrAttrgroupRelationService.list(queryRelationWrapper);
+                if (!CollectionUtils.isEmpty(otherGroupList)) {
+                    attrIdList = relationList.stream().map(AttrAttrgroupRelationEntity::getAttrId).collect(Collectors.toList());
+                }
+            }
+            QueryWrapper<AttrEntity> attrQueryWrapper = new QueryWrapper<>();
+            attrQueryWrapper.eq("catelog_id", catelogId);
+            if (!CollectionUtils.isEmpty(attrIdList)) {
+                attrQueryWrapper.notIn("attr_id", attrIdList);
+            }
+            IPage<AttrEntity> page = this.page(new Query<AttrEntity>().getPage(params), attrQueryWrapper);
+            return new PageUtils(page);
+        }
+        return null;
     }
 
     /**

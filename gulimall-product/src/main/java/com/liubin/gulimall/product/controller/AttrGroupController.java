@@ -39,6 +39,13 @@ public class AttrGroupController {
     @Autowired
     private AttrService attrService;
 
+    @GetMapping("/{attrGroupId}/noattr/relation")
+    public R attrNoRelation(@PathVariable("attrGroupId") Long attrGroupId,
+                            @RequestParam Map<String, Object> params) {
+        PageUtils page = attrService.getAttrNoRelation(attrGroupId, params);
+        return R.ok().put("page", page);
+    }
+
     @PostMapping("attr/relation/delete")
     public R deleteRelation(@RequestBody AttrGroupRelationVo[] relationVos) {
         attrGroupService.deleteRelation(Stream.of(relationVos).collect(Collectors.toList()));

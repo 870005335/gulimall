@@ -3,7 +3,9 @@ package com.liubin.gulimall.product.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.liubin.common.utils.PageUtils;
 import com.liubin.gulimall.product.entity.CategoryBrandRelationEntity;
+import com.liubin.gulimall.product.vo.BrandVo;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -45,5 +47,14 @@ public interface CategoryBrandRelationService extends IService<CategoryBrandRela
      * @return: void
      */
     void updateCategoryRelation(Long catId, String name);
+
+    /**
+     * @Author liubin
+     * @Description 查询分类Id下品牌列表
+     * @Date 11:19 2021/3/17
+     * @param catId
+     * @return {@link List< BrandVo>}
+     **/
+    List<BrandVo> getBrandsByCatId(Long catId);
 }
 

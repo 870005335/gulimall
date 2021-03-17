@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import java.math.BigDecimal;
 import java.io.Serializable;
 import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 /**
@@ -49,13 +51,17 @@ public class SpuInfoEntity implements Serializable {
 	 * 上架状态[0 - 下架，1 - 上架]
 	 */
 	private Integer publishStatus;
+
 	/**
 	 * 
 	 */
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
 	private Date createTime;
+
 	/**
 	 * 
 	 */
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
 	private Date updateTime;
 
 }

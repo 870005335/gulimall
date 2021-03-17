@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.liubin.gulimall.product.vo.BrandVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,6 +28,12 @@ import com.liubin.common.utils.R;
 public class CategoryBrandRelationController {
     @Autowired
     private CategoryBrandRelationService categoryBrandRelationService;
+
+    @GetMapping("brands/list")
+    public R relationBrandsList(@RequestParam(value = "catId", required = true)Long catId) {
+        List<BrandVo> brandList = categoryBrandRelationService.getBrandsByCatId(catId);
+        return R.ok().put("data",brandList);
+    }
 
     /**
      * 列表

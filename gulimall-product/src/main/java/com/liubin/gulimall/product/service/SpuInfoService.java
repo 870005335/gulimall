@@ -16,5 +16,15 @@ import java.util.Map;
 public interface SpuInfoService extends IService<SpuInfoEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
+
+
+    /**
+     * @Author liubin
+     * @Description 分页查询spu列表
+     * @Date 16:44 2021/3/17
+     * @param params
+     * @return {@link PageUtils}
+     **/
+    PageUtils queryPageByCondition(Map<String, Object> params);
 }
 

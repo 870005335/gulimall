@@ -1,5 +1,6 @@
 package com.liubin.gulimall.product.service.impl;
 
+import com.liubin.gulimall.product.entity.SpuInfoEntity;
 import org.springframework.stereotype.Service;
 import java.util.Map;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -25,5 +26,4 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
 
         return new PageUtils(page);
     }
-
 }

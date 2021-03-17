@@ -5,7 +5,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 
-@MapperScan("com.liubin.gulimall")
+@MapperScan("com.liubin.gulimall.member.dao")
 @SpringBootApplication
 @EnableDiscoveryClient
 public class GuLiMallMemberApplication {

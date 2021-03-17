@@ -16,10 +16,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -68,7 +65,7 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
         BeanUtils.copyProperties(attr, attrSave);
         this.save(attrSave);
         // 保存关联关系
-        if (AttrTypeEnum.ATTR_TYPE_BASE.getCode() == (attr.getAttrType())) {
+        if (AttrTypeEnum.ATTR_TYPE_BASE.getCode() == (attr.getAttrType()) && attr.getAttrGroupId() != null) {
             AttrAttrgroupRelationEntity attrRelationSave = new AttrAttrgroupRelationEntity();
             attrRelationSave.setAttrGroupId(attr.getAttrGroupId());
             attrRelationSave.setAttrId(attrSave.getAttrId());
@@ -191,22 +188,25 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
                     .eq("catelog_id", catelogId).ne("attr_group_id", attrGroupId);
             List<AttrGroupEntity> otherGroupList = attrGroupService.list(queryGroupWrapper);
             List<Long> attrIdList = new ArrayList<>();
+            otherGroupList.add(groupEntity);
+            // 取出attrGroupId列表
+            List<Long> otherGroupIdList = otherGroupList
+                    .stream()
+                    .map(AttrGroupEntity::getAttrGroupId)
+                    .collect(Collectors.toList());
+            // 查询attrGroupId列表下关联的属性列表
+            Wrapper<AttrAttrgroupRelationEntity>  queryRelationWrapper = new QueryWrapper<AttrAttrgroupRelationEntity>()
+                    .in("attr_group_id", otherGroupIdList);
+            List<AttrAttrgroupRelationEntity> relationList = attrAttrgroupRelationService.list(queryRelationWrapper);
             if (!CollectionUtils.isEmpty(otherGroupList)) {
-                // 取出attrGroupId列表
-                List<Long> otherGroupIdList = otherGroupList
-                        .stream()
-                        .map(AttrGroupEntity::getAttrGroupId)
-                        .collect(Collectors.toList());
-                // 查询attrGroupId列表下关联的属性列表
-                Wrapper<AttrAttrgroupRelationEntity>  queryRelationWrapper = new QueryWrapper<AttrAttrgroupRelationEntity>()
-                        .in("attr_group_id", otherGroupIdList);
-                List<AttrAttrgroupRelationEntity> relationList = attrAttrgroupRelationService.list(queryRelationWrapper);
-                if (!CollectionUtils.isEmpty(otherGroupList)) {
-                    attrIdList = relationList.stream().map(AttrAttrgroupRelationEntity::getAttrId).collect(Collectors.toList());
-                }
+                attrIdList = relationList.stream().map(AttrAttrgroupRelationEntity::getAttrId).collect(Collectors.toList());
             }
             QueryWrapper<AttrEntity> attrQueryWrapper = new QueryWrapper<>();
-            attrQueryWrapper.eq("catelog_id", catelogId);
+            attrQueryWrapper.eq("catelog_id", catelogId).eq("attr_type", AttrTypeEnum.ATTR_TYPE_BASE.getCode());
+            String key = (String) params.get("key");
+            if (StringUtils.isNotBlank(key)) {
+                attrQueryWrapper.like("attr_name", key);
+            }
             if (!CollectionUtils.isEmpty(attrIdList)) {
                 attrQueryWrapper.notIn("attr_id", attrIdList);
             }
@@ -263,19 +263,24 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
         // 查询中间表
         List<AttrAttrgroupRelationEntity> attrRelationList = attrAttrgroupRelationService.list(
                 new QueryWrapper<AttrAttrgroupRelationEntity>().in("attr_id", attrIdList));
-        if (!CollectionUtils.isEmpty(attrRelationList)) {
+        List<AttrAttrgroupRelationEntity> filterRelationList = attrRelationList
+                .stream()
+                .filter(relation -> relation.getAttrGroupId() != null)
+                .collect(Collectors.toList());
+        if (!CollectionUtils.isEmpty(filterRelationList)) {
             // 查询属性分组表
-            List<Long> attrGroupIdList = attrRelationList.stream()
+            List<Long> attrGroupIdList = filterRelationList.stream()
                     .map(AttrAttrgroupRelationEntity::getAttrGroupId)
                     .collect(Collectors.toList());
             if (!CollectionUtils.isEmpty(attrGroupIdList)) {
                 List<AttrGroupEntity> attrGroupEntityList = attrGroupService.listByIds(attrGroupIdList);
                 if (!CollectionUtils.isEmpty(attrGroupEntityList)) {
-                    for (AttrAttrgroupRelationEntity relationEntity : attrRelationList) {
+                    for (AttrAttrgroupRelationEntity relationEntity : filterRelationList) {
                         Long attrId = relationEntity.getAttrId();
                         Long attrGroupId = relationEntity.getAttrGroupId();
                         AttrGroupEntity attrGroup = attrGroupEntityList.stream()
-                                .filter(groupEntity -> attrGroupId.equals(groupEntity.getAttrGroupId())).findFirst()
+                                .filter(groupEntity -> attrGroupId.equals(groupEntity.getAttrGroupId()))
+                                .findFirst()
                                 .orElseGet(AttrGroupEntity::new);
                         attrGroup.setAttrGroupId(attrGroupId);
                         attrGroupMap.put(attrId, attrGroup);

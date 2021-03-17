@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.liubin.gulimall.product.entity.AttrEntity;
+import com.liubin.gulimall.product.service.AttrAttrgroupRelationService;
 import com.liubin.gulimall.product.service.AttrService;
 import com.liubin.gulimall.product.service.CategoryService;
 import com.liubin.gulimall.product.vo.AttrGroupRelationVo;
@@ -38,6 +39,15 @@ public class AttrGroupController {
 
     @Autowired
     private AttrService attrService;
+
+    @Autowired
+    private AttrAttrgroupRelationService attrAttrgroupRelationService;
+
+    @PostMapping("attr/relation")
+    public R saveRelationBatch(@RequestBody List<AttrGroupRelationVo> relationVoList) {
+        attrAttrgroupRelationService.saveRelationBatch(relationVoList);
+        return R.ok();
+    }
 
     @GetMapping("/{attrGroupId}/noattr/relation")
     public R attrNoRelation(@PathVariable("attrGroupId") Long attrGroupId,

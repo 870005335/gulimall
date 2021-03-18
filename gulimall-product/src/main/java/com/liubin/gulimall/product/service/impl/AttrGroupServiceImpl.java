@@ -11,6 +11,7 @@ import com.liubin.gulimall.product.entity.AttrAttrgroupRelationEntity;
 import com.liubin.gulimall.product.entity.AttrGroupEntity;
 import com.liubin.gulimall.product.service.AttrGroupService;
 import com.liubin.gulimall.product.vo.AttrGroupRelationVo;
+import com.liubin.gulimall.product.vo.AttrGroupWithAttrsVo;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,5 +65,10 @@ public class AttrGroupServiceImpl extends ServiceImpl<AttrGroupDao, AttrGroupEnt
             return relationEntity;
         }).collect(Collectors.toList());
         relationDao.deleteBatchRelation(entities);
+    }
+
+    @Override
+    public List<AttrGroupWithAttrsVo> getAttrGroupWithAttrsByCatelogId(Long catelogId) {
+        return null;
     }
 }

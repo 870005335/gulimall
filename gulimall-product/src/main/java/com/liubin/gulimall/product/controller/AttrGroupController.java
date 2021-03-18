@@ -1,5 +1,6 @@
 package com.liubin.gulimall.product.controller;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +12,7 @@ import com.liubin.gulimall.product.service.AttrAttrgroupRelationService;
 import com.liubin.gulimall.product.service.AttrService;
 import com.liubin.gulimall.product.service.CategoryService;
 import com.liubin.gulimall.product.vo.AttrGroupRelationVo;
+import com.liubin.gulimall.product.vo.AttrGroupWithAttrsVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -42,6 +44,12 @@ public class AttrGroupController {
 
     @Autowired
     private AttrAttrgroupRelationService attrAttrgroupRelationService;
+
+    @GetMapping("{catelogId}/withattr")
+    public R getAttrGroupWithAttrs(@PathVariable("catelogId") Long catelogId) {
+        List<AttrGroupWithAttrsVo> resultList = attrGroupService.getAttrGroupWithAttrsByCatelogId(catelogId);
+        return R.ok().put("data", resultList);
+    }
 
     @PostMapping("attr/relation")
     public R saveRelationBatch(@RequestBody List<AttrGroupRelationVo> relationVoList) {

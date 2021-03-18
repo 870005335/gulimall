@@ -1,14 +1,12 @@
 package com.liubin.gulimall.member.controller;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Map;
 
+import com.liubin.gulimall.member.vo.MemberStatusVo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.liubin.gulimall.member.entity.MemberEntity;
 import com.liubin.gulimall.member.service.MemberService;
@@ -27,8 +25,18 @@ import com.liubin.common.utils.R;
 @RestController
 @RequestMapping("member/member")
 public class MemberController {
+
     @Autowired
     private MemberService memberService;
+
+    @PostMapping("update/status")
+    public R updateMemberStatus(@RequestBody MemberStatusVo statusVo) {
+        MemberEntity member = new MemberEntity();
+        member.setId(statusVo.getId());
+        member.setStatus(statusVo.getStatus());
+        this.memberService.updateById(member);
+        return R.ok();
+    }
 
     /**
      * 列表
@@ -59,6 +67,7 @@ public class MemberController {
     @RequestMapping("/save")
     // @RequiresPermissions("member:member:save")
     public R save(@RequestBody MemberEntity member){
+        member.setCreateTime(new Date());
 		memberService.save(member);
 
         return R.ok();

@@ -1,14 +1,15 @@
 package com.liubin.gulimall.member.controller;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import com.liubin.gulimall.member.vo.MemberLevelListVo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.util.CollectionUtils;
+import org.springframework.web.bind.annotation.*;
 
 import com.liubin.gulimall.member.entity.MemberLevelEntity;
 import com.liubin.gulimall.member.service.MemberLevelService;
@@ -27,8 +28,24 @@ import com.liubin.common.utils.R;
 @RestController
 @RequestMapping("member/memberlevel")
 public class MemberLevelController {
+
     @Autowired
     private MemberLevelService memberLevelService;
+
+    @GetMapping("/getMemberLevelList")
+    public R getMemberLevelList() {
+        List<MemberLevelListVo> memberLevelList = new ArrayList<>();
+        List<MemberLevelEntity> levelList = memberLevelService.list();
+        if (!CollectionUtils.isEmpty(levelList)) {
+            memberLevelList = levelList.stream().map(level -> {
+                MemberLevelListVo levelVo = new MemberLevelListVo();
+                levelVo.setLevelId(level.getId());
+                levelVo.setName(level.getName());
+                return levelVo;
+            }).collect(Collectors.toList());
+        }
+        return R.ok().put("resultList", memberLevelList);
+    }
 
     /**
      * 列表

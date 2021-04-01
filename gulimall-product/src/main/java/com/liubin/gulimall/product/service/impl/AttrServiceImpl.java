@@ -290,4 +290,13 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
         }
         return attrGroupMap;
     }
+
+    @Override
+    public void deleteAttrs(List<Long> idList, String type) {
+        this.removeByIds(idList);
+        if ("base".equals(type)) {
+            attrAttrgroupRelationService.remove(
+                    new QueryWrapper<AttrAttrgroupRelationEntity>().in("attr_id", idList));
+        }
+    }
 }

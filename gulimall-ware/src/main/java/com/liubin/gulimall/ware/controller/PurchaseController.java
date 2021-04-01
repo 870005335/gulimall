@@ -1,14 +1,14 @@
 package com.liubin.gulimall.ware.controller;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.liubin.gulimall.ware.vo.MergeVo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.liubin.gulimall.ware.entity.PurchaseEntity;
 import com.liubin.gulimall.ware.service.PurchaseService;
@@ -29,6 +29,33 @@ import com.liubin.common.utils.R;
 public class PurchaseController {
     @Autowired
     private PurchaseService purchaseService;
+
+
+    /**
+     * 领取采购单
+     * @return
+     */
+    @PostMapping("/received")
+    public R received(@RequestBody List<Long> ids){
+
+        purchaseService.received(ids);
+
+        return R.ok();
+    }
+
+    @PostMapping("/merge")
+    public R merge(@RequestBody MergeVo mergeVo){
+
+        purchaseService.mergePurchase(mergeVo);
+        return R.ok();
+    }
+
+    @GetMapping("unreceive/list")
+    public R queryUnReceiveList() {
+        List<PurchaseEntity> resultList = purchaseService.list(
+                new QueryWrapper<PurchaseEntity>().in("status", Arrays.asList(0, 1)));
+        return R.ok().put("page", resultList);
+    }
 
     /**
      * 列表

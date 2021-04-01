@@ -6,10 +6,10 @@ spring:
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
     #MySQL配置
-    driverClassName: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://192.168.1.96:3306/gulimall_ums?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai
-    username: root
-    password: root
+#    driverClassName: com.mysql.cj.jdbc.Driver
+#    url: jdbc:mysql://192.168.1.96:3306/gulimall_pms?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai
+#    username: root
+#    password: root
     #oracle配置
     #    driverClassName: oracle.jdbc.OracleDriver
     #    url: jdbc:oracle:thin:@47.100.206.162:1521:xe
@@ -21,10 +21,10 @@ spring:
     #    username: sa
     #    password: 123456
     #PostgreSQL配置
-  #    driverClassName: org.postgresql.Driver
-  #    url: jdbc:postgresql://192.168.10.10:5432/renren_fast
-  #    username: postgres
-  #    password: 123456
+    driverClassName: org.postgresql.Driver
+    url: jdbc:postgresql://172.2.0.21:5435/Pudongtest
+    username: postgres
+    password: wayzpg@1234tes
 
 
 
@@ -55,5 +55,5 @@ pagehelper:
 
 #指定数据库，可选值有【mysql、oracle、sqlserver、postgresql、mongodb】
 renren:
-  database: mysql
+  database: postgresql
 

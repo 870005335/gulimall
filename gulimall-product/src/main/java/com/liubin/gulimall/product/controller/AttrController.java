@@ -82,10 +82,10 @@ public class AttrController {
     /**
      * 删除
      */
-    @RequestMapping("/delete")
+    @RequestMapping("{type}/delete")
     // @RequiresPermissions("product:attr:delete")
-    public R delete(@RequestBody Long[] attrIds){
-		attrService.removeByIds(Arrays.asList(attrIds));
+    public R delete(@PathVariable("type") String type, @RequestBody Long[] attrIds){
+		attrService.deleteAttrs(Arrays.asList(attrIds), type);
 
         return R.ok();
     }

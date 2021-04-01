@@ -39,6 +39,13 @@ public interface AttrGroupService extends IService<AttrGroupEntity> {
      **/
     void deleteRelation(List<AttrGroupRelationVo> attrGroupRelationVoList);
 
-    List<AttrGroupWithAttrsVo> getAttrGroupWithAttrsByCatelogId(Long catelogId);
+    /**
+     * @Author liubin
+     * @Description 查询分类下分组及属性
+     * @Date 10:47 2021/3/19
+     * @param catelogId
+     * @return {@link List< AttrGroupWithAttrsVo>}
+     **/
+    List<AttrGroupWithAttrsVo> getAttrGroupWithAttrsByCategoryId(Long catelogId);
 }
 

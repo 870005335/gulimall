@@ -3,12 +3,9 @@ package com.liubin.gulimall.coupon.controller;
 import java.util.Arrays;
 import java.util.Map;
 
+import com.liubin.common.dto.SkuReductionDto;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.liubin.gulimall.coupon.entity.SkuFullReductionEntity;
 import com.liubin.gulimall.coupon.service.SkuFullReductionService;
@@ -29,6 +26,12 @@ import com.liubin.common.utils.R;
 public class SkuFullReductionController {
     @Autowired
     private SkuFullReductionService skuFullReductionService;
+
+    @PostMapping("saveSkuReduction")
+    public R saveSkuReduction(@RequestBody SkuReductionDto reductionDto) {
+        skuFullReductionService.saveSkuReduction(reductionDto);
+        return R.ok();
+    }
 
     /**
      * 列表

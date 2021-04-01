@@ -1,6 +1,7 @@
 package com.liubin.gulimall.coupon.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.liubin.common.dto.SkuReductionDto;
 import com.liubin.common.utils.PageUtils;
 import com.liubin.gulimall.coupon.entity.SkuFullReductionEntity;
 
@@ -16,5 +17,14 @@ import java.util.Map;
 public interface SkuFullReductionService extends IService<SkuFullReductionEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
+
+    /**
+     * @Author liubin
+     * @Description 保存sku满减优惠信息
+     * @Date 16:35 2021/3/19
+     * @param reductionDto
+     * @return
+     **/
+    void saveSkuReduction(SkuReductionDto reductionDto);
 }
 

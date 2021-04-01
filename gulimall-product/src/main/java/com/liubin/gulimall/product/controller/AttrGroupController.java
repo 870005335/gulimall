@@ -1,12 +1,13 @@
 package com.liubin.gulimall.product.controller;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.liubin.gulimall.product.entity.AttrAttrgroupRelationEntity;
 import com.liubin.gulimall.product.entity.AttrEntity;
 import com.liubin.gulimall.product.service.AttrAttrgroupRelationService;
 import com.liubin.gulimall.product.service.AttrService;
@@ -14,6 +15,7 @@ import com.liubin.gulimall.product.service.CategoryService;
 import com.liubin.gulimall.product.vo.AttrGroupRelationVo;
 import com.liubin.gulimall.product.vo.AttrGroupWithAttrsVo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import com.liubin.gulimall.product.entity.AttrGroupEntity;
@@ -47,7 +49,7 @@ public class AttrGroupController {
 
     @GetMapping("{catelogId}/withattr")
     public R getAttrGroupWithAttrs(@PathVariable("catelogId") Long catelogId) {
-        List<AttrGroupWithAttrsVo> resultList = attrGroupService.getAttrGroupWithAttrsByCatelogId(catelogId);
+        List<AttrGroupWithAttrsVo> resultList = attrGroupService.getAttrGroupWithAttrsByCategoryId(catelogId);
         return R.ok().put("data", resultList);
     }
 
@@ -131,7 +133,14 @@ public class AttrGroupController {
     @RequestMapping("/delete")
     // @RequiresPermissions("product:attrgroup:delete")
     public R delete(@RequestBody Long[] attrGroupIds){
-		attrGroupService.removeByIds(Arrays.asList(attrGroupIds));
+        List<Long> groupIdList = Arrays.asList(attrGroupIds);
+        // 属性分组下有关联属性 不能删除
+        List<AttrAttrgroupRelationEntity> relationList = attrAttrgroupRelationService.list(
+                new QueryWrapper<AttrAttrgroupRelationEntity>().in("attr_group_id", groupIdList));
+        if (!CollectionUtils.isEmpty(relationList)) {
+            return R.error("所选分组下有关联属性,请先移除关联");
+        }
+        attrGroupService.removeByIds(groupIdList);
 
         return R.ok();
     }

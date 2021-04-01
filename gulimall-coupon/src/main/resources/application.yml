@@ -18,3 +18,8 @@ mybatis-plus:
 
 server:
   port: 7000
+
+logging:
+  level:
+    com.liubin.gulimall.coupon: debug
+    com.alibaba.nacos.client.config.impl: WARN

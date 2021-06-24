@@ -5,6 +5,8 @@ import com.liubin.common.utils.PageUtils;
 import com.liubin.gulimall.product.entity.AttrGroupEntity;
 import com.liubin.gulimall.product.vo.AttrGroupRelationVo;
 import com.liubin.gulimall.product.vo.AttrGroupWithAttrsVo;
+import com.liubin.gulimall.product.vo.SkuItemVo;
+import com.liubin.gulimall.product.vo.SpuItemAttrGroupVo;
 
 import java.util.List;
 import java.util.Map;
@@ -44,8 +46,18 @@ public interface AttrGroupService extends IService<AttrGroupEntity> {
      * @Description 查询分类下分组及属性
      * @Date 10:47 2021/3/19
      * @param catelogId
-     * @return {@link List< AttrGroupWithAttrsVo>}
+     * @return {@link List<AttrGroupWithAttrsVo>}
      **/
     List<AttrGroupWithAttrsVo> getAttrGroupWithAttrsByCategoryId(Long catelogId);
+
+    /**
+     * @Author liubin
+     * @Description 查询spuId下分组及属性
+     * @Date 14:16 2021/5/24
+     * @param spuId
+     * @param catalogId
+     * @return java.util.List<com.liubin.gulimall.product.vo.SpuItemGroupVo>
+     **/
+    List<SpuItemAttrGroupVo> getAttrGroupWithAttrsBySpuId(Long spuId, Long catalogId);
 }
 

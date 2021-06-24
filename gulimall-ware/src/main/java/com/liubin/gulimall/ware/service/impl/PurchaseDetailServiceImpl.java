@@ -1,6 +1,5 @@
 package com.liubin.gulimall.ware.service.impl;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,6 +13,7 @@ import com.liubin.common.utils.Query;
 import com.liubin.gulimall.ware.dao.PurchaseDetailDao;
 import com.liubin.gulimall.ware.entity.PurchaseDetailEntity;
 import com.liubin.gulimall.ware.service.PurchaseDetailService;
+import org.springframework.util.StringUtils;
 
 
 @Service("purchaseDetailService")
@@ -21,6 +21,11 @@ public class PurchaseDetailServiceImpl extends ServiceImpl<PurchaseDetailDao, Pu
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
+
+        /**
+         * status: 0,//状态
+         *    wareId: 1,//仓库id
+         */
 
         QueryWrapper<PurchaseDetailEntity> queryWrapper = new QueryWrapper<PurchaseDetailEntity>();
 
@@ -55,6 +60,9 @@ public class PurchaseDetailServiceImpl extends ServiceImpl<PurchaseDetailDao, Pu
     @Override
     public List<PurchaseDetailEntity> listDetailByPurchaseId(Long id) {
 
-        return this.list(new QueryWrapper<PurchaseDetailEntity>().eq("purchase_id", id));
+        List<PurchaseDetailEntity> purchaseId = this.list(new QueryWrapper<PurchaseDetailEntity>().eq("purchase_id", id));
+
+        return purchaseId;
     }
+
 }

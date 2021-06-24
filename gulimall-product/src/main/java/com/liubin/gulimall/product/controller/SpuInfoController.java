@@ -3,7 +3,10 @@ package com.liubin.gulimall.product.controller;
 import java.util.Arrays;
 import java.util.Map;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.liubin.gulimall.product.vo.SpuSaveVo;
+import com.liubin.gulimall.product.vo.SpuStatusVo;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,6 +24,7 @@ import com.liubin.common.utils.R;
  * @email 870005335@qq.com
  * @date 2021-02-26 11:21:23
  */
+@Slf4j
 @RestController
 @RequestMapping("product/spuinfo")
 public class SpuInfoController {
@@ -28,8 +32,18 @@ public class SpuInfoController {
     private SpuInfoService spuInfoService;
 
     @PostMapping("updatePublishStatus")
-    public R updatePublishStatus(@RequestBody SpuInfoEntity entity) {
-        this.spuInfoService.updateById(entity);
+    public R updatePublishStatus(@RequestBody SpuStatusVo statusVo) {
+        try {
+            if (statusVo.getPublishStatus() == 1) {
+                spuInfoService.updatePublishStatusUp(statusVo);
+            } else {
+                spuInfoService.updatePublishStatusDown(statusVo);
+            }
+        } catch (Exception e) {
+            log.error("商品上架异常", e);
+            throw new RuntimeException(e.getMessage());
+        }
+
         return R.ok();
     }
 

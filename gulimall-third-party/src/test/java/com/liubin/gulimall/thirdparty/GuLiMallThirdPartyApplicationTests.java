@@ -18,9 +18,10 @@ class GuLiMallThirdPartyApplicationTests {
 
     @Test
     void contextLoads() throws FileNotFoundException {
-        InputStream inputStream = new FileInputStream("C:\\Users\\87000\\Desktop\\oss.yml");
-        ossClient.putObject("gulimall-liubin", "oss.yml", inputStream);
-        ossClient.shutdown();
+//        InputStream inputStream = new FileInputStream("C:\\Users\\87000\\Desktop\\oss.yml");
+//        ossClient.putObject("gulimall-liubin", "oss.yml", inputStream);
+//        ossClient.shutdown();
+//        ossClient.deleteObject();
     }
 
 }

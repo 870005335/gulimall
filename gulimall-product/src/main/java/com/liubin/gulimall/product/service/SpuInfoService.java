@@ -1,9 +1,12 @@
 package com.liubin.gulimall.product.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.liubin.common.utils.PageUtils;
+import com.liubin.gulimall.product.controller.SpuInfoController;
 import com.liubin.gulimall.product.entity.SpuInfoEntity;
 import com.liubin.gulimall.product.vo.SpuSaveVo;
+import com.liubin.gulimall.product.vo.SpuStatusVo;
 
 import java.util.Map;
 
@@ -45,5 +48,24 @@ public interface SpuInfoService extends IService<SpuInfoEntity> {
      * @return
      **/
     void saveSpuBaseInfo(SpuInfoEntity saveInfo);
+
+    /**
+     * @Author liubin
+     * @Description 商品上架
+     * @Date 10:45 2021/4/9
+     * @param statusVo
+     * @return
+     **/
+    void updatePublishStatusUp(SpuStatusVo statusVo) throws JsonProcessingException;
+
+    /**
+     * @Author liubin
+     * @Description 商品下架
+     * @Date 10:45 2021/4/9
+     * @param statusVo
+     * @return
+     **/
+    void updatePublishStatusDown(SpuStatusVo statusVo);
+
 }
 

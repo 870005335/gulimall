@@ -85,5 +85,14 @@ public interface AttrService extends IService<AttrEntity> {
      * @return
      **/
     void deleteAttrs(List<Long> idList, String type);
+
+    /**
+     * @Author liubin
+     * @Description 查询 productAttrIdList中可检索的Id列表
+     * @Date 11:53 2021/4/9
+     * @param productAttrIdList
+     * @return {@link java.util.List<java.lang.Long>}
+     **/
+    List<Long> getSearchableProductAttrIdList(List<Long> productAttrIdList);
 }
 

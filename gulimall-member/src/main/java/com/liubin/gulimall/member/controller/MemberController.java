@@ -4,7 +4,13 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.Map;
 
+import com.liubin.common.enums.BizCodeEnum;
+import com.liubin.gulimall.member.exception.PhoneExistException;
+import com.liubin.gulimall.member.exception.UserNameExistException;
+import com.liubin.gulimall.member.vo.MemberLoginVo;
+import com.liubin.gulimall.member.vo.MemberRegisterVo;
 import com.liubin.gulimall.member.vo.MemberStatusVo;
+import com.liubin.gulimall.member.vo.SocialUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,6 +34,30 @@ public class MemberController {
 
     @Autowired
     private MemberService memberService;
+
+    @PostMapping("oauth2/login")
+    public R oauthLogin(@RequestBody SocialUser socialUser) {
+        MemberEntity member = memberService.login(socialUser);
+        return R.ok().put("member", member);
+    }
+
+    @PostMapping("login")
+    public R login(@RequestBody MemberLoginVo loginVo) {
+        MemberEntity member = memberService.login(loginVo);
+        return R.ok().put("member", member);
+    }
+
+    @PostMapping("register")
+    public R register(@RequestBody MemberRegisterVo registerVo) {
+        try {
+            memberService.register(registerVo);
+        }catch (PhoneExistException e){
+            return R.error(BizCodeEnum.PHONE_EXIST_EXCEPTION.getCode(), BizCodeEnum.PHONE_EXIST_EXCEPTION.getMsg());
+        }catch (UserNameExistException e){
+            return R.error(BizCodeEnum.USER_EXIST_EXCEPTION.getCode(), BizCodeEnum.USER_EXIST_EXCEPTION.getMsg());
+        }
+        return R.ok();
+    }
 
     @PostMapping("update/status")
     public R updateMemberStatus(@RequestBody MemberStatusVo statusVo) {

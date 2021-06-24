@@ -1,11 +1,22 @@
 package com.liubin.gulimall.product.service.impl;
 
-import com.liubin.gulimall.product.entity.SpuInfoEntity;
+import com.liubin.gulimall.product.entity.SkuImagesEntity;
+import com.liubin.gulimall.product.entity.SpuInfoDescEntity;
+import com.liubin.gulimall.product.service.*;
+import com.liubin.gulimall.product.vo.SkuItemSaleAttrsVo;
+import com.liubin.gulimall.product.vo.SkuItemVo;
+import com.liubin.gulimall.product.vo.SpuItemAttrGroupVo;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ThreadPoolExecutor;
+
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -14,11 +25,25 @@ import com.liubin.common.utils.Query;
 
 import com.liubin.gulimall.product.dao.SkuInfoDao;
 import com.liubin.gulimall.product.entity.SkuInfoEntity;
-import com.liubin.gulimall.product.service.SkuInfoService;
 
 
 @Service("skuInfoService")
 public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> implements SkuInfoService {
+
+    @Autowired
+    private SkuImagesService skuImagesService;
+
+    @Autowired
+    private SpuInfoDescService spuInfoDescService;
+
+    @Autowired
+    private AttrGroupService attrGroupService;
+
+    @Autowired
+    private SkuSaleAttrValueService skuSaleAttrValueService;
+
+    @Autowired
+    private ThreadPoolExecutor executor;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -62,5 +87,44 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
         );
 
         return new PageUtils(page);
+    }
+
+    @Override
+    public List<SkuInfoEntity> querySkuInfoListBySpuId(Long spuId) {
+        return this.list(new QueryWrapper<SkuInfoEntity>().eq("spu_id", spuId));
+    }
+
+    @Override
+    public SkuItemVo item(Long skuId) throws ExecutionException, InterruptedException {
+        SkuItemVo skuItemVo = new SkuItemVo();
+        CompletableFuture<SkuInfoEntity> infoFuture = CompletableFuture.supplyAsync(() -> {
+            // sku基本信息获取 pms_sku_info
+            SkuInfoEntity info = this.baseMapper.selectById(skuId);
+            skuItemVo.setInfo(info);
+            return info;
+        }, executor);
+        CompletableFuture<Void> saleAttrFuture = infoFuture.thenAcceptAsync((res) -> {
+            // 获取spu的销售属性组合
+            List<SkuItemSaleAttrsVo> saleAttr = skuSaleAttrValueService.getSaleAttrsBySpuId(res.getSpuId());
+            skuItemVo.setSaleAttr(saleAttr);
+        }, executor);
+        CompletableFuture<Void> descFuture = infoFuture.thenAcceptAsync((res) -> {
+            // 获取spu的介绍
+            SpuInfoDescEntity desc = spuInfoDescService.getById(res.getSpuId());
+            skuItemVo.setDesc(desc);
+        }, executor);
+        CompletableFuture<Void> baseAttrFuture = infoFuture.thenAcceptAsync((res) -> {
+            // 获取spu的规格参数信息
+            List<SpuItemAttrGroupVo> groupAttrs = attrGroupService.getAttrGroupWithAttrsBySpuId(res.getSpuId(), res.getCatalogId());
+            skuItemVo.setGroupAttrs(groupAttrs);
+        }, executor);
+
+        // sku的图片信息 pms_sku_images
+        CompletableFuture<Void> imageFuture = CompletableFuture.runAsync(() -> {
+            List<SkuImagesEntity> images = skuImagesService.getImagesBySkuId(skuId);
+            skuItemVo.setImages(images);
+        }, executor);
+        CompletableFuture.allOf(saleAttrFuture, descFuture, baseAttrFuture, imageFuture).get();
+        return skuItemVo;
     }
 }

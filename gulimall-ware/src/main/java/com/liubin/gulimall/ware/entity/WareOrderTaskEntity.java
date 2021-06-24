@@ -7,13 +7,7 @@ import java.io.Serializable;
 import java.util.Date;
 import lombok.Data;
 
-/**
- * 库存工作单
- * 
- * @author liubin
- * @email 870005335@qq.com
- * @date 2021-02-26 12:06:43
- */
+
 @Data
 @TableName("wms_ware_order_task")
 public class WareOrderTaskEntity implements Serializable {

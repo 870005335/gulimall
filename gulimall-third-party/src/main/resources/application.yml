@@ -3,6 +3,12 @@ spring:
     nacos:
       discovery:
         server-addr: 127.0.0.1:8848
+    alicloud:
+      sms:
+        host: "https://smssend.shumaidata.com"
+        path: "/sms/send"
+        appcode: 3f6c91f13e7c45e78ecc16ff99433b91
+        template-id: M09DD535F4
   application:
     name: gulimall-third-party
 

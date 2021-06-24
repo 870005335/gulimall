@@ -3,6 +3,7 @@ package com.liubin.gulimall.product.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.liubin.common.utils.PageUtils;
 import com.liubin.gulimall.product.entity.CategoryEntity;
+import com.liubin.gulimall.product.vo.Catalog2Vo;
 
 import java.util.List;
 import java.util.Map;
@@ -53,5 +54,23 @@ public interface CategoryService extends IService<CategoryEntity> {
      * @return: void
      */
     void updateCategoryAndRelation(CategoryEntity category);
+
+    /**
+     * @Author liubin
+     * @Description 查询所有一级分类
+     * @Date 20:30 2021/4/10
+     * @param
+     * @return {@link List< CategoryEntity>}
+     **/
+    List<CategoryEntity> getFirstLevelCategoryList();
+
+    /**
+     * @Author liubin
+     * @Description 获取指定形式分类数据
+     * @Date 23:17 2021/4/10
+     * @param
+     * @return {@link Map<String, List<Catalog2Vo>>}
+     **/
+    Map<String, List<Catalog2Vo>> getCatalogJson();
 }
 

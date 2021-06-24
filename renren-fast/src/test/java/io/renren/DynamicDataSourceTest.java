@@ -28,11 +28,11 @@ public class DynamicDataSourceTest {
 
     @Test
     public void test(){
-        Long id = 1L;
-
-        dynamicDataSourceTestService.updateUser(id);
-        dynamicDataSourceTestService.updateUserBySlave1(id);
-        dynamicDataSourceTestService.updateUserBySlave2(id);
+//        Long id = 1L;
+//
+//        dynamicDataSourceTestService.updateUser(id);
+//        dynamicDataSourceTestService.updateUserBySlave1(id);
+//        dynamicDataSourceTestService.updateUserBySlave2(id);
     }
 
 }

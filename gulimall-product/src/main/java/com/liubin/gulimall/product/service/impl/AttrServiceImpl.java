@@ -299,4 +299,14 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
                     new QueryWrapper<AttrAttrgroupRelationEntity>().in("attr_id", idList));
         }
     }
+
+    @Override
+    public List<Long> getSearchableProductAttrIdList(List<Long> productAttrIdList) {
+        List<AttrEntity> attrEntityList = this.list(new QueryWrapper<AttrEntity>().in("attr_id", productAttrIdList)
+                .eq("search_type", "1").eq("enable", "1"));
+        if (!CollectionUtils.isEmpty(attrEntityList)) {
+            return attrEntityList.stream().map(AttrEntity::getAttrId).collect(Collectors.toList());
+        }
+        return null;
+    }
 }

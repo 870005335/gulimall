@@ -16,5 +16,13 @@ import java.util.Map;
 public interface MemberLevelService extends IService<MemberLevelEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
+
+    /**
+     * @Author liubin
+     * @Description 获取会员默认等级
+     * @Date 22:56 2021/6/5
+     * @return com.liubin.gulimall.member.entity.MemberLevelEntity
+     **/
+    MemberLevelEntity getDefaultLevel();
 }
 

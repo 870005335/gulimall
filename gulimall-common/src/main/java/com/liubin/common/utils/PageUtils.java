@@ -1,5 +1,7 @@
 package com.liubin.common.utils;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -36,6 +38,17 @@ public class PageUtils implements Serializable {
 		this.pageSize = pageSize;
 		this.currPage = currPage;
 		this.totalPage = (int)Math.ceil((double)totalCount/pageSize);
+	}
+
+	/**
+	 * 分页
+	 */
+	public PageUtils(IPage<?> page) {
+		this.list = page.getRecords();
+		this.totalCount = (int)page.getTotal();
+		this.pageSize = (int)page.getSize();
+		this.currPage = (int)page.getCurrent();
+		this.totalPage = (int)page.getPages();
 	}
 
 	public int getTotalCount() {

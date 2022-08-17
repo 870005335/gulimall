@@ -1,15 +1,12 @@
 package com.liubin.gulimall.product.controller;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.liubin.gulimall.product.entity.CategoryEntity;
 import com.liubin.gulimall.product.service.CategoryService;
@@ -30,6 +27,15 @@ import com.liubin.common.utils.R;
 public class CategoryController {
     @Autowired
     private CategoryService categoryService;
+
+    /**
+     * 三级分类树形结构
+     */
+    @GetMapping("list/tree")
+    public R listWithTree() {
+        List<CategoryEntity> categoryTree = categoryService.listWithTree();
+        return R.ok().put("trees", categoryTree);
+    }
 
     /**
      * 列表

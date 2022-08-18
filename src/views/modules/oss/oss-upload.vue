@@ -1,71 +1,65 @@
 <template>
-  <el-dialog
-    title="上传文件"
-    :close-on-click-modal="false"
-    @close="closeHandle"
-    :visible.sync="visible">
+  <el-dialog :visible.sync="visible" :title="$t('oss.upload')" :close-on-click-modal="false" :close-on-press-escape="false">
     <el-upload
-      drag
       :action="url"
+      :file-list="fileList"
+      drag
+      multiple
       :before-upload="beforeUploadHandle"
       :on-success="successHandle"
-      multiple
-      :file-list="fileList"
-      style="text-align: center;">
+      class="text-center">
       <i class="el-icon-upload"></i>
-      <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
-      <div class="el-upload__tip" slot="tip">只支持jpg、png、gif格式的图片！</div>
+      <div class="el-upload__text" v-html="$t('upload.text')"></div>
+      <div class="el-upload__tip" slot="tip">{{ $t('upload.tip', { 'format': 'jpg、png、gif' }) }}</div>
     </el-upload>
   </el-dialog>
 </template>
 
 <script>
-  export default {
-    data () {
-      return {
-        visible: false,
-        url: '',
-        num: 0,
-        successNum: 0,
-        fileList: []
-      }
+import Cookies from 'js-cookie'
+export default {
+  data () {
+    return {
+      visible: false,
+      url: '',
+      num: 0,
+      fileList: []
+    }
+  },
+  methods: {
+    init () {
+      this.visible = true
+      this.url = `${window.SITE_CONFIG['apiURL']}/sys/oss/upload?token=${Cookies.get('token')}`
+      this.num = 0
+      this.fileList = []
     },
-    methods: {
-      init (id) {
-        this.url = this.$http.adornUrl(`/sys/oss/upload?token=${this.$cookie.get('token')}`)
-        this.visible = true
-      },
-      // 上传之前
-      beforeUploadHandle (file) {
-        if (file.type !== 'image/jpg' && file.type !== 'image/jpeg' && file.type !== 'image/png' && file.type !== 'image/gif') {
-          this.$message.error('只支持jpg、png、gif格式的图片！')
-          return false
-        }
-        this.num++
-      },
-      // 上传成功
-      successHandle (response, file, fileList) {
-        this.fileList = fileList
-        this.successNum++
-        if (response && response.code === 0) {
-          if (this.num === this.successNum) {
-            this.$confirm('操作成功, 是否继续操作?', '提示', {
-              confirmButtonText: '确定',
-              cancelButtonText: '取消',
-              type: 'warning'
-            }).catch(() => {
-              this.visible = false
-            })
+    // 上传之前
+    beforeUploadHandle (file) {
+      if (file.type !== 'image/jpg' && file.type !== 'image/jpeg' && file.type !== 'image/png' && file.type !== 'image/gif') {
+        this.$message.error(this.$t('upload.tip', { 'format': 'jpg、png、gif' }))
+        return false
+      }
+      this.num++
+    },
+    // 上传成功
+    successHandle (res, file, fileList) {
+      if (res.code !== 0) {
+        return this.$message.error(res.msg)
+      }
+      this.fileList = fileList
+      this.num--
+      if (this.num === 0) {
+        this.$message({
+          message: this.$t('prompt.success'),
+          type: 'success',
+          duration: 500,
+          onClose: () => {
+            this.visible = false
+            this.$emit('refreshDataList')
           }
-        } else {
-          this.$message.error(response.msg)
-        }
-      },
-      // 弹窗关闭时
-      closeHandle () {
-        this.fileList = []
-        this.$emit('refreshDataList')
+        })
       }
     }
   }
+}
 </script>

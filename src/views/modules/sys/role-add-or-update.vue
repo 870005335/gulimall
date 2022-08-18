@@ -1,123 +1,148 @@
 <template>
-  <el-dialog
-    :title="!dataForm.id ? '新增' : '修改'"
-    :close-on-click-modal="false"
-    :visible.sync="visible">
-    <el-form :model="dataForm" :rules="dataRule" ref="dataForm" @keyup.enter.native="dataFormSubmit()" label-width="80px">
-      <el-form-item label="角色名称" prop="roleName">
-        <el-input v-model="dataForm.roleName" placeholder="角色名称"></el-input>
+  <el-dialog :visible.sync="visible" :title="!dataForm.id ? $t('add') : $t('update')" :close-on-click-modal="false" :close-on-press-escape="false">
+    <el-form :model="dataForm" :rules="dataRule" ref="dataForm" @keyup.enter.native="dataFormSubmitHandle()" label-width="120px">
+      <el-form-item prop="name" :label="$t('role.name')">
+        <el-input v-model="dataForm.name" :placeholder="$t('role.name')"></el-input>
       </el-form-item>
-      <el-form-item label="备注" prop="remark">
-        <el-input v-model="dataForm.remark" placeholder="备注"></el-input>
+      <el-form-item prop="remark" :label="$t('role.remark')">
+        <el-input v-model="dataForm.remark" :placeholder="$t('role.remark')"></el-input>
       </el-form-item>
-      <el-form-item size="mini" label="授权">
-        <el-tree
-          :data="menuList"
-          :props="menuListTreeProps"
-          node-key="menuId"
-          ref="menuListTree"
-          :default-expand-all="true"
-          show-checkbox>
-        </el-tree>
-      </el-form-item>
+      <el-row>
+        <el-col :span="12">
+          <el-form-item size="mini" :label="$t('role.menuList')">
+            <el-tree
+              :data="menuList"
+              :props="{ label: 'name', children: 'children' }"
+              node-key="id"
+              ref="menuListTree"
+              accordion
+              show-checkbox>
+            </el-tree>
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item size="mini" :label="$t('role.deptList')">
+            <el-tree
+              :data="deptList"
+              :props="{ label: 'name', children: 'children' }"
+              node-key="id"
+              ref="deptListTree"
+              accordion
+              show-checkbox>
+            </el-tree>
+          </el-form-item>
+        </el-col>
+      </el-row>
     </el-form>
-    <span slot="footer" class="dialog-footer">
-      <el-button @click="visible = false">取消</el-button>
-      <el-button type="primary" @click="dataFormSubmit()">确定</el-button>
-    </span>
+    <template slot="footer">
+      <el-button @click="visible = false">{{ $t('cancel') }}</el-button>
+      <el-button type="primary" @click="dataFormSubmitHandle()">{{ $t('confirm') }}</el-button>
+    </template>
   </el-dialog>
 </template>
 
 <script>
-  import { treeDataTranslate } from '@/utils'
-  export default {
-    data () {
-      return {
-        visible: false,
-        menuList: [],
-        menuListTreeProps: {
-          label: 'name',
-          children: 'children'
-        },
-        dataForm: {
-          id: 0,
-          roleName: '',
-          remark: ''
-        },
-        dataRule: {
-          roleName: [
-            { required: true, message: '角色名称不能为空', trigger: 'blur' }
-          ]
-        },
-        tempKey: -666666 // 临时key, 用于解决tree半选中状态项不能传给后台接口问题. # 待优化
-      }
-    },
-    methods: {
-      init (id) {
-        this.dataForm.id = id || 0
-        this.$http({
-          url: this.$http.adornUrl('/sys/menu/list'),
-          method: 'get',
-          params: this.$http.adornParams()
-        }).then(({data}) => {
-          this.menuList = treeDataTranslate(data, 'menuId')
-        }).then(() => {
-          this.visible = true
-          this.$nextTick(() => {
-            this.$refs['dataForm'].resetFields()
-            this.$refs.menuListTree.setCheckedKeys([])
-          })
-        }).then(() => {
-          if (this.dataForm.id) {
-            this.$http({
-              url: this.$http.adornUrl(`/sys/role/info/${this.dataForm.id}`),
-              method: 'get',
-              params: this.$http.adornParams()
-            }).then(({data}) => {
-              if (data && data.code === 0) {
-                this.dataForm.roleName = data.role.roleName
-                this.dataForm.remark = data.role.remark
-                var idx = data.role.menuIdList.indexOf(this.tempKey)
-                if (idx !== -1) {
-                  data.role.menuIdList.splice(idx, data.role.menuIdList.length - idx)
-                }
-                this.$refs.menuListTree.setCheckedKeys(data.role.menuIdList)
-              }
-            })
-          }
-        })
-      },
-      // 表单提交
-      dataFormSubmit () {
-        this.$refs['dataForm'].validate((valid) => {
-          if (valid) {
-            this.$http({
-              url: this.$http.adornUrl(`/sys/role/${!this.dataForm.id ? 'save' : 'update'}`),
-              method: 'post',
-              data: this.$http.adornData({
-                'roleId': this.dataForm.id || undefined,
-                'roleName': this.dataForm.roleName,
-                'remark': this.dataForm.remark,
-                'menuIdList': [].concat(this.$refs.menuListTree.getCheckedKeys(), [this.tempKey], this.$refs.menuListTree.getHalfCheckedKeys())
-              })
-            }).then(({data}) => {
-              if (data && data.code === 0) {
-                this.$message({
-                  message: '操作成功',
-                  type: 'success',
-                  duration: 1500,
-                  onClose: () => {
-                    this.visible = false
-                    this.$emit('refreshDataList')
-                  }
-                })
-              } else {
-                this.$message.error(data.msg)
-              }
-            })
-          }
-        })
+import debounce from 'lodash/debounce'
+export default {
+  data () {
+    return {
+      visible: false,
+      menuList: [],
+      deptList: [],
+      dataForm: {
+        id: '',
+        name: '',
+        menuIdList: [],
+        deptIdList: [],
+        remark: ''
       }
     }
+  },
+  computed: {
+    dataRule () {
+      return {
+        name: [
+          { required: true, message: this.$t('validate.required'), trigger: 'blur' }
+        ]
+      }
+    }
+  },
+  methods: {
+    init () {
+      this.visible = true
+      this.$nextTick(() => {
+        this.$refs['dataForm'].resetFields()
+        this.$refs.menuListTree.setCheckedKeys([])
+        this.$refs.deptListTree.setCheckedKeys([])
+        Promise.all([
+          this.getMenuList(),
+          this.getDeptList()
+        ]).then(() => {
+          if (this.dataForm.id) {
+            this.getInfo()
+          }
+        })
+      })
+    },
+    // 获取菜单列表
+    getMenuList () {
+      return this.$http.get('/sys/menu/select').then(({ data: res }) => {
+        if (res.code !== 0) {
+          return this.$message.error(res.msg)
+        }
+        this.menuList = res.data
+      }).catch(() => {})
+    },
+    // 获取部门列表
+    getDeptList () {
+      return this.$http.get('/sys/dept/list').then(({ data: res }) => {
+        if (res.code !== 0) {
+          return this.$message.error(res.msg)
+        }
+        this.deptList = res.data
+      }).catch(() => {})
+    },
+    // 获取信息
+    getInfo () {
+      this.$http.get(`/sys/role/${this.dataForm.id}`).then(({ data: res }) => {
+        if (res.code !== 0) {
+          return this.$message.error(res.msg)
+        }
+        this.dataForm = {
+          ...this.dataForm,
+          ...res.data
+        }
+        this.dataForm.menuIdList.forEach(item => this.$refs.menuListTree.setChecked(item, true))
+        this.$refs.deptListTree.setCheckedKeys(this.dataForm.deptIdList)
+      }).catch(() => {})
+    },
+    // 表单提交
+    dataFormSubmitHandle: debounce(function () {
+      this.$refs['dataForm'].validate((valid) => {
+        if (!valid) {
+          return false
+        }
+        this.dataForm.menuIdList = [
+          ...this.$refs.menuListTree.getHalfCheckedKeys(),
+          ...this.$refs.menuListTree.getCheckedKeys()
+        ]
+        this.dataForm.deptIdList = this.$refs.deptListTree.getCheckedKeys()
+        this.$http[!this.dataForm.id ? 'post' : 'put']('/sys/role', this.dataForm).then(({ data: res }) => {
+          if (res.code !== 0) {
+            return this.$message.error(res.msg)
+          }
+          this.$message({
+            message: this.$t('prompt.success'),
+            type: 'success',
+            duration: 500,
+            onClose: () => {
+              this.visible = false
+              this.$emit('refreshDataList')
+            }
+          })
+        }).catch(() => {})
+      })
+    }, 1000, { 'leading': true, 'trailing': false })
   }
+}
 </script>

@@ -1,260 +1,221 @@
 <template>
-  <el-dialog
-    :title="!dataForm.id ? '新增' : '修改'"
-    :close-on-click-modal="false"
-    :visible.sync="visible">
-    <el-form :model="dataForm" :rules="dataRule" ref="dataForm" @keyup.enter.native="dataFormSubmit()" label-width="80px">
-      <el-form-item label="类型" prop="type">
-        <el-radio-group v-model="dataForm.type">
-          <el-radio v-for="(type, index) in dataForm.typeList" :label="index" :key="index">{{ type }}</el-radio>
+  <el-dialog :visible.sync="visible" :title="!dataForm.id ? $t('add') : $t('update')" :close-on-click-modal="false" :close-on-press-escape="false">
+    <el-form :model="dataForm" :rules="dataRule" ref="dataForm" @keyup.enter.native="dataFormSubmitHandle()" label-width="120px">
+      <el-form-item prop="type" :label="$t('menu.type')" size="mini">
+        <el-radio-group v-model="dataForm.type" :disabled="!!dataForm.id">
+          <el-radio :label="0">{{ $t('menu.type0') }}</el-radio>
+          <el-radio :label="1">{{ $t('menu.type1') }}</el-radio>
         </el-radio-group>
       </el-form-item>
-      <el-form-item :label="dataForm.typeList[dataForm.type] + '名称'" prop="name">
-        <el-input v-model="dataForm.name" :placeholder="dataForm.typeList[dataForm.type] + '名称'"></el-input>
+      <el-form-item prop="name" :label="$t('menu.name')">
+        <el-input v-model="dataForm.name" :placeholder="$t('menu.name')"></el-input>
       </el-form-item>
-      <el-form-item label="上级菜单" prop="parentName">
-        <el-popover
-          ref="menuListPopover"
-          placement="bottom-start"
-          trigger="click">
+      <el-form-item prop="parentName" :label="$t('menu.parentName')" class="menu-list">
+        <el-popover v-model="menuListVisible" ref="menuListPopover" placement="bottom-start" trigger="click">
           <el-tree
             :data="menuList"
-            :props="menuListTreeProps"
-            node-key="menuId"
+            :props="{ label: 'name', children: 'children' }"
+            node-key="id"
             ref="menuListTree"
-            @current-change="menuListTreeCurrentChangeHandle"
-            :default-expand-all="true"
             :highlight-current="true"
-            :expand-on-click-node="false">
+            :expand-on-click-node="false"
+            accordion
+            @current-change="menuListTreeCurrentChangeHandle">
           </el-tree>
         </el-popover>
-        <el-input v-model="dataForm.parentName" v-popover:menuListPopover :readonly="true" placeholder="点击选择上级菜单" class="menu-list__input"></el-input>
+        <el-input v-model="dataForm.parentName" v-popover:menuListPopover :readonly="true" :placeholder="$t('menu.parentName')">
+          <i v-if="dataForm.pid !== '0'" slot="suffix" @click.stop="deptListTreeSetDefaultHandle()" class="el-icon-circle-close el-input__icon"></i>
+        </el-input>
       </el-form-item>
-      <el-form-item v-if="dataForm.type === 1" label="菜单路由" prop="url">
-        <el-input v-model="dataForm.url" placeholder="菜单路由"></el-input>
+      <el-form-item v-if="dataForm.type === 0" prop="url" :label="$t('menu.url')">
+        <el-input v-model="dataForm.url" :placeholder="$t('menu.url')"></el-input>
       </el-form-item>
-      <el-form-item v-if="dataForm.type !== 0" label="授权标识" prop="perms">
-        <el-input v-model="dataForm.perms" placeholder="多个用逗号分隔, 如: user:list,user:create"></el-input>
+      <el-form-item prop="sort" :label="$t('menu.sort')">
+        <el-input-number v-model="dataForm.sort" controls-position="right" :min="0" :label="$t('menu.sort')"></el-input-number>
       </el-form-item>
-      <el-form-item v-if="dataForm.type !== 2" label="排序号" prop="orderNum">
-        <el-input-number v-model="dataForm.orderNum" controls-position="right" :min="0" label="排序号"></el-input-number>
+      <el-form-item prop="permissions" :label="$t('menu.permissions')">
+        <el-input v-model="dataForm.permissions" :placeholder="$t('menu.permissionsTips')"></el-input>
       </el-form-item>
-      <el-form-item v-if="dataForm.type !== 2" label="菜单图标" prop="icon">
-        <el-row>
-          <el-col :span="22">
-            <el-popover
-              ref="iconListPopover"
-              placement="bottom-start"
-              trigger="click"
-              popper-class="mod-menu__icon-popover">
-              <div class="mod-menu__icon-inner">
-                <div class="mod-menu__icon-list">
-                  <el-button
-                    v-for="(item, index) in iconList"
-                    :key="index"
-                    @click="iconActiveHandle(item)"
-                    :class="{ 'is-active': item === dataForm.icon }">
-                    <icon-svg :name="item"></icon-svg>
-                  </el-button>
-                </div>
-              </div>
-            </el-popover>
-            <el-input v-model="dataForm.icon" v-popover:iconListPopover :readonly="true" placeholder="菜单图标名称" class="icon-list__input"></el-input>
-          </el-col>
-          <el-col :span="2" class="icon-list__tips">
-            <el-tooltip placement="top" effect="light">
-              <div slot="content">全站推荐使用SVG Sprite, 详细请参考:<a href="//github.com/daxiongYang/renren-fast-vue/blob/master/src/icons/index.js" target="_blank">icons/index.js</a>描述</div>
-              <i class="el-icon-warning"></i>
-            </el-tooltip>
-          </el-col>
-        </el-row>
+      <el-form-item v-if="dataForm.type === 0" prop="icon" :label="$t('menu.icon')" class="icon-list">
+        <el-popover v-model="iconListVisible" ref="iconListPopover" placement="bottom-start" trigger="click" popper-class="mod-sys__menu-icon-popover">
+          <div class="mod-sys__menu-icon-inner">
+            <div class="mod-sys__menu-icon-list">
+              <el-button
+                v-for="(item, index) in iconList"
+                :key="index"
+                @click="iconListCurrentChangeHandle(item)"
+                :class="{ 'is-active': dataForm.icon === item }">
+                <svg class="icon-svg" aria-hidden="true"><use :xlink:href="`#${item}`"></use></svg>
+              </el-button>
+            </div>
+          </div>
+        </el-popover>
+        <el-input v-model="dataForm.icon" v-popover:iconListPopover :readonly="true" :placeholder="$t('menu.icon')"></el-input>
       </el-form-item>
     </el-form>
-    <span slot="footer" class="dialog-footer">
-      <el-button @click="visible = false">取消</el-button>
-      <el-button type="primary" @click="dataFormSubmit()">确定</el-button>
-    </span>
+    <template slot="footer">
+      <el-button @click="visible = false">{{ $t('cancel') }}</el-button>
+      <el-button type="primary" @click="dataFormSubmitHandle()">{{ $t('confirm') }}</el-button>
+    </template>
   </el-dialog>
 </template>
 
 <script>
-  import { treeDataTranslate } from '@/utils'
-  import Icon from '@/icons'
-  export default {
-    data () {
-      var validateUrl = (rule, value, callback) => {
-        if (this.dataForm.type === 1 && !/\S/.test(value)) {
-          callback(new Error('菜单URL不能为空'))
-        } else {
-          callback()
-        }
-      }
-      return {
-        visible: false,
-        dataForm: {
-          id: 0,
-          type: 1,
-          typeList: ['目录', '菜单', '按钮'],
-          name: '',
-          parentId: 0,
-          parentName: '',
-          url: '',
-          perms: '',
-          orderNum: 0,
-          icon: '',
-          iconList: []
-        },
-        dataRule: {
-          name: [
-            { required: true, message: '菜单名称不能为空', trigger: 'blur' }
-          ],
-          parentName: [
-            { required: true, message: '上级菜单不能为空', trigger: 'change' }
-          ],
-          url: [
-            { validator: validateUrl, trigger: 'blur' }
-          ]
-        },
-        menuList: [],
-        menuListTreeProps: {
-          label: 'name',
-          children: 'children'
-        }
-      }
-    },
-    created () {
-      this.iconList = Icon.getNameList()
-    },
-    methods: {
-      init (id) {
-        this.dataForm.id = id || 0
-        this.$http({
-          url: this.$http.adornUrl('/sys/menu/select'),
-          method: 'get',
-          params: this.$http.adornParams()
-        }).then(({data}) => {
-          this.menuList = treeDataTranslate(data.menuList, 'menuId')
-        }).then(() => {
-          this.visible = true
-          this.$nextTick(() => {
-            this.$refs['dataForm'].resetFields()
-          })
-        }).then(() => {
-          if (!this.dataForm.id) {
-            // 新增
-            this.menuListTreeSetCurrentNode()
-          } else {
-            // 修改
-            this.$http({
-              url: this.$http.adornUrl(`/sys/menu/info/${this.dataForm.id}`),
-              method: 'get',
-              params: this.$http.adornParams()
-            }).then(({data}) => {
-              this.dataForm.id = data.menu.menuId
-              this.dataForm.type = data.menu.type
-              this.dataForm.name = data.menu.name
-              this.dataForm.parentId = data.menu.parentId
-              this.dataForm.url = data.menu.url
-              this.dataForm.perms = data.menu.perms
-              this.dataForm.orderNum = data.menu.orderNum
-              this.dataForm.icon = data.menu.icon
-              this.menuListTreeSetCurrentNode()
-            })
-          }
-        })
-      },
-      // 菜单树选中
-      menuListTreeCurrentChangeHandle (data, node) {
-        this.dataForm.parentId = data.menuId
-        this.dataForm.parentName = data.name
-      },
-      // 菜单树设置当前选中节点
-      menuListTreeSetCurrentNode () {
-        this.$refs.menuListTree.setCurrentKey(this.dataForm.parentId)
-        this.dataForm.parentName = (this.$refs.menuListTree.getCurrentNode() || {})['name']
-      },
-      // 图标选中
-      iconActiveHandle (iconName) {
-        this.dataForm.icon = iconName
-      },
-      // 表单提交
-      dataFormSubmit () {
-        this.$refs['dataForm'].validate((valid) => {
-          if (valid) {
-            this.$http({
-              url: this.$http.adornUrl(`/sys/menu/${!this.dataForm.id ? 'save' : 'update'}`),
-              method: 'post',
-              data: this.$http.adornData({
-                'menuId': this.dataForm.id || undefined,
-                'type': this.dataForm.type,
-                'name': this.dataForm.name,
-                'parentId': this.dataForm.parentId,
-                'url': this.dataForm.url,
-                'perms': this.dataForm.perms,
-                'orderNum': this.dataForm.orderNum,
-                'icon': this.dataForm.icon
-              })
-            }).then(({data}) => {
-              if (data && data.code === 0) {
-                this.$message({
-                  message: '操作成功',
-                  type: 'success',
-                  duration: 1500,
-                  onClose: () => {
-                    this.visible = false
-                    this.$emit('refreshDataList')
-                  }
-                })
-              } else {
-                this.$message.error(data.msg)
-              }
-            })
-          }
-        })
+import debounce from 'lodash/debounce'
+import { getIconList } from '@/utils'
+export default {
+  data () {
+    return {
+      visible: false,
+      menuList: [],
+      menuListVisible: false,
+      iconList: [],
+      iconListVisible: false,
+      dataForm: {
+        id: '',
+        type: 0,
+        name: '',
+        pid: '0',
+        parentName: '',
+        url: '',
+        permissions: '',
+        sort: 0,
+        icon: ''
       }
     }
+  },
+  computed: {
+    dataRule () {
+      return {
+        name: [
+          { required: true, message: this.$t('validate.required'), trigger: 'blur' }
+        ],
+        parentName: [
+          { required: true, message: this.$t('validate.required'), trigger: 'change' }
+        ]
+      }
+    }
+  },
+  watch: {
+    'dataForm.type' (val) {
+      this.$refs['dataForm'].clearValidate()
+    }
+  },
+  methods: {
+    init () {
+      this.visible = true
+      this.$nextTick(() => {
+        this.$refs['dataForm'].resetFields()
+        this.iconList = getIconList()
+        this.dataForm.parentName = this.$t('menu.parentNameDefault')
+        this.getMenuList().then(() => {
+          if (this.dataForm.id) {
+            this.getInfo()
+          }
+        })
+      })
+    },
+    // 获取菜单列表
+    getMenuList () {
+      return this.$http.get('/sys/menu/list?type=0').then(({ data: res }) => {
+        if (res.code !== 0) {
+          return this.$message.error(res.msg)
+        }
+        this.menuList = res.data
+      }).catch(() => {})
+    },
+    // 获取信息
+    getInfo () {
+      this.$http.get(`/sys/menu/${this.dataForm.id}`).then(({ data: res }) => {
+        if (res.code !== 0) {
+          return this.$message.error(res.msg)
+        }
+        this.dataForm = {
+          ...this.dataForm,
+          ...res.data
+        }
+        if (this.dataForm.pid === '0') {
+          return this.deptListTreeSetDefaultHandle()
+        }
+        this.$refs.menuListTree.setCurrentKey(this.dataForm.pid)
+      }).catch(() => {})
+    },
+    // 上级菜单树, 设置默认值
+    deptListTreeSetDefaultHandle () {
+      this.dataForm.pid = '0'
+      this.dataForm.parentName = this.$t('menu.parentNameDefault')
+    },
+    // 上级菜单树, 选中
+    menuListTreeCurrentChangeHandle (data) {
+      this.dataForm.pid = data.id
+      this.dataForm.parentName = data.name
+      this.menuListVisible = false
+    },
+    // 图标, 选中
+    iconListCurrentChangeHandle (icon) {
+      this.dataForm.icon = icon
+      this.iconListVisible = false
+    },
+    // 表单提交
+    dataFormSubmitHandle: debounce(function () {
+      this.$refs['dataForm'].validate((valid) => {
+        if (!valid) {
+          return false
+        }
+        this.$http[!this.dataForm.id ? 'post' : 'put']('/sys/menu', this.dataForm).then(({ data: res }) => {
+          if (res.code !== 0) {
+            return this.$message.error(res.msg)
+          }
+          this.$message({
+            message: this.$t('prompt.success'),
+            type: 'success',
+            duration: 500,
+            onClose: () => {
+              this.visible = false
+              this.$emit('refreshDataList')
+            }
+          })
+        }).catch(() => {})
+      })
+    }, 1000, { 'leading': true, 'trailing': false })
   }
+}
 </script>
 
 <style lang="scss">
-  .mod-menu {
-    .menu-list__input,
-    .icon-list__input {
-       > .el-input__inner {
-        cursor: pointer;
-      }
-    }
-    &__icon-popover {
-      width: 458px;
-      overflow: hidden;
-    }
-    &__icon-inner {
-      width: 478px;
-      max-height: 258px;
-      overflow-x: hidden;
-      overflow-y: auto;
-    }
-    &__icon-list {
-      width: 458px;
-      padding: 0;
-      margin: -8px 0 0 -8px;
-      > .el-button {
-        padding: 8px;
-        margin: 8px 0 0 8px;
-        > span {
-          display: inline-block;
-          vertical-align: middle;
-          width: 18px;
-          height: 18px;
-          font-size: 18px;
-        }
-      }
-    }
-    .icon-list__tips {
-      font-size: 18px;
-      text-align: center;
-      color: #e6a23c;
+.mod-sys__menu {
+  .menu-list,
+  .icon-list {
+    .el-input__inner,
+    .el-input__suffix {
       cursor: pointer;
     }
   }
+  &-icon-popover {
+    width: 458px;
+    overflow: hidden;
+  }
+  &-icon-inner {
+    width: 478px;
+    max-height: 258px;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+  &-icon-list {
+    width: 458px;
+    padding: 0;
+    margin: -8px 0 0 -8px;
+    > .el-button {
+      padding: 8px;
+      margin: 8px 0 0 8px;
+      > span {
+        display: inline-block;
+        vertical-align: middle;
+        width: 18px;
+        height: 18px;
+        font-size: 18px;
+      }
+    }
+  }
+}
 </style>

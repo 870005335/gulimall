@@ -1,36 +1,43 @@
 import Vue from 'vue'
+import Element from 'element-ui'
 import App from '@/App'
-import router from '@/router'                 // api: https://github.com/vuejs/vue-router
-import store from '@/store'                   // api: https://github.com/vuejs/vuex
-import VueCookie from 'vue-cookie'            // api: https://github.com/alfhen/vue-cookie
-import '@/element-ui'                         // api: https://github.com/ElemeFE/element
-import '@/icons'                              // api: http://www.iconfont.cn/
-import '@/element-ui-theme'
-import '@/assets/scss/index.scss'
-import httpRequest from '@/utils/httpRequest' // api: https://github.com/axios/axios
-import { isAuth } from '@/utils'
+import i18n from '@/i18n'
+import router from '@/router'
+import store from '@/store'
+import '@/icons'
+import '@/element-ui/theme/index.css'
+import '@/assets/scss/aui.scss'
+import http from '@/utils/request'
+import renRadioGroup from '@/components/ren-radio-group'
+import renSelect from '@/components/ren-select'
+import renDeptTree from '@/components/ren-dept-tree'
+import renRegionTree from '@/components/ren-region-tree'
+import { hasPermission, getDictLabel } from '@/utils'
 import cloneDeep from 'lodash/cloneDeep'
 
-Vue.use(VueCookie)
 Vue.config.productionTip = false
 
-// 非生产环境, 适配mockjs模拟数据                 // api: https://github.com/nuysoft/Mock
-if (process.env.NODE_ENV !== 'production') {
-  require('@/mock')
-}
+Vue.use(Element, {
+  size: 'default',
+  i18n: (key, value) => i18n.t(key, value)
+})
+
+Vue.use(renRadioGroup)
+Vue.use(renSelect)
+Vue.use(renDeptTree)
+Vue.use(renRegionTree)
 
 // 挂载全局
-Vue.prototype.$http = httpRequest // ajax请求方法
-Vue.prototype.isAuth = isAuth     // 权限方法
+Vue.prototype.$http = http
+Vue.prototype.$hasPermission = hasPermission
+Vue.prototype.$getDictLabel = getDictLabel
 
 // 保存整站vuex本地储存初始状态
 window.SITE_CONFIG['storeState'] = cloneDeep(store.state)
 
-/* eslint-disable no-new */
 new Vue({
-  el: '#app',
+  i18n,
   router,
   store,
-  template: '<App/>',
-  components: { App }
-})
+  render: h => h(App)
+}).$mount('#app')

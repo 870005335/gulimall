@@ -1,90 +1,102 @@
 <template>
-  <div
-    class="site-wrapper"
-    :class="{ 'site-sidebar--fold': sidebarFold }"
-    v-loading.fullscreen.lock="loading"
-    element-loading-text="拼命加载中">
+  <div v-loading.fullscreen.lock="loading" :element-loading-text="$t('loading')" :class="['aui-wrapper', { 'aui-sidebar--fold': $store.state.sidebarFold }]">
     <template v-if="!loading">
       <main-navbar />
       <main-sidebar />
-      <div class="site-content__wrapper" :style="{ 'min-height': documentClientHeight + 'px' }">
-        <main-content v-if="!$store.state.common.contentIsNeedRefresh" />
+      <div class="aui-content__wrapper">
+        <main-content v-if="!$store.state.contentIsNeedRefresh" />
       </div>
     </template>
   </div>
 </template>
 
 <script>
-  import MainNavbar from './main-navbar'
-  import MainSidebar from './main-sidebar'
-  import MainContent from './main-content'
-  export default {
-    provide () {
-      return {
-        // 刷新
-        refresh () {
-          this.$store.commit('common/updateContentIsNeedRefresh', true)
-          this.$nextTick(() => {
-            this.$store.commit('common/updateContentIsNeedRefresh', false)
-          })
-        }
-      }
-    },
-    data () {
-      return {
-        loading: true
-      }
-    },
-    components: {
-      MainNavbar,
-      MainSidebar,
-      MainContent
-    },
-    computed: {
-      documentClientHeight: {
-        get () { return this.$store.state.common.documentClientHeight },
-        set (val) { this.$store.commit('common/updateDocumentClientHeight', val) }
-      },
-      sidebarFold: {
-        get () { return this.$store.state.common.sidebarFold }
-      },
-      userId: {
-        get () { return this.$store.state.user.id },
-        set (val) { this.$store.commit('user/updateId', val) }
-      },
-      userName: {
-        get () { return this.$store.state.user.name },
-        set (val) { this.$store.commit('user/updateName', val) }
-      }
-    },
-    created () {
-      this.getUserInfo()
-    },
-    mounted () {
-      this.resetDocumentClientHeight()
-    },
-    methods: {
-      // 重置窗口可视高度
-      resetDocumentClientHeight () {
-        this.documentClientHeight = document.documentElement['clientHeight']
-        window.onresize = () => {
-          this.documentClientHeight = document.documentElement['clientHeight']
-        }
-      },
-      // 获取当前管理员信息
-      getUserInfo () {
-        this.$http({
-          url: this.$http.adornUrl('/sys/user/info'),
-          method: 'get',
-          params: this.$http.adornParams()
-        }).then(({data}) => {
-          if (data && data.code === 0) {
-            this.loading = false
-            this.userId = data.user.userId
-            this.userName = data.user.username
-          }
+import MainNavbar from './main-navbar'
+import MainSidebar from './main-sidebar'
+import MainContent from './main-content'
+import debounce from 'lodash/debounce'
+export default {
+  provide () {
+    return {
+      // 刷新
+      refresh () {
+        this.$store.state.contentIsNeedRefresh = true
+        this.$nextTick(() => {
+          this.$store.state.contentIsNeedRefresh = false
         })
       }
     }
+  },
+  data () {
+    return {
+      loading: true
+    }
+  },
+  components: {
+    MainNavbar,
+    MainSidebar,
+    MainContent
+  },
+  watch: {
+    $route: 'routeHandle'
+  },
+  created () {
+    this.windowResizeHandle()
+    this.routeHandle(this.$route)
+    Promise.all([
+      this.getUserInfo(),
+      this.getPermissions()
+    ]).then(() => {
+      this.loading = false
+    })
+  },
+  methods: {
+    // 窗口改变大小
+    windowResizeHandle () {
+      this.$store.state.sidebarFold = document.documentElement['clientWidth'] <= 992 || false
+      window.addEventListener('resize', debounce(() => {
+        this.$store.state.sidebarFold = document.documentElement['clientWidth'] <= 992 || false
+      }, 150))
+    },
+    // 路由, 监听
+    routeHandle (route) {
+      if (!route.meta.isTab) {
+        return false
+      }
+      var tab = this.$store.state.contentTabs.filter(item => item.name === route.name)[0]
+      if (!tab) {
+        tab = {
+          ...window.SITE_CONFIG['contentTabDefault'],
+          ...route.meta,
+          'name': route.name,
+          'params': { ...route.params },
+          'query': { ...route.query }
+        }
+        this.$store.state.contentTabs = this.$store.state.contentTabs.concat(tab)
+      }
+      this.$store.state.sidebarMenuActiveName = tab.menuId
+      this.$store.state.contentTabsActiveName = tab.name
+    },
+    // 获取当前管理员信息
+    getUserInfo () {
+      return this.$http.get('/sys/user/info').then(({ data: res }) => {
+        if (res.code !== 0) {
+          return this.$message.error(res.msg)
+        }
+        this.$store.state.user.id = res.data.id
+        this.$store.state.user.name = res.data.username
+        this.$store.state.user.superAdmin = res.data.superAdmin
+      }).catch(() => {})
+    },
+    // 获取权限
+    getPermissions () {
+      return this.$http.get('/sys/menu/permissions').then(({ data: res }) => {
+        if (res.code !== 0) {
+          return this.$message.error(res.msg)
+        }
+        window.SITE_CONFIG['permissions'] = res.data
+      }).catch(() => {})
+    }
   }
+}
 </script>

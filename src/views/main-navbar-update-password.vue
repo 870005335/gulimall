@@ -1,112 +1,97 @@
 <template>
   <el-dialog
-    title="修改密码"
     :visible.sync="visible"
+    :title="$t('updatePassword.title')"
+    :close-on-click-modal="false"
+    :close-on-press-escape="false"
     :append-to-body="true">
-    <el-form :model="dataForm" :rules="dataRule" ref="dataForm" @keyup.enter.native="dataFormSubmit()" label-width="80px">
-      <el-form-item label="账号">
-        <span>{{ userName }}</span>
+    <el-form :model="dataForm" :rules="dataRule" ref="dataForm" @keyup.enter.native="dataFormSubmitHandle()" label-width="120px">
+      <el-form-item :label="$t('updatePassword.username')">
+        <span>{{ $store.state.user.name }}</span>
       </el-form-item>
-      <el-form-item label="原密码" prop="password">
-        <el-input type="password" v-model="dataForm.password"></el-input>
+      <el-form-item prop="password" :label="$t('updatePassword.password')">
+        <el-input v-model="dataForm.password" type="password" :placeholder="$t('updatePassword.password')"></el-input>
       </el-form-item>
-      <el-form-item label="新密码" prop="newPassword">
-        <el-input type="password" v-model="dataForm.newPassword"></el-input>
+      <el-form-item prop="newPassword" :label="$t('updatePassword.newPassword')">
+        <el-input v-model="dataForm.newPassword" type="password" :placeholder="$t('updatePassword.newPassword')"></el-input>
       </el-form-item>
-      <el-form-item label="确认密码" prop="confirmPassword">
-        <el-input type="password" v-model="dataForm.confirmPassword"></el-input>
+      <el-form-item prop="confirmPassword" :label="$t('updatePassword.confirmPassword')">
+        <el-input v-model="dataForm.confirmPassword" type="password" :placeholder="$t('updatePassword.confirmPassword')"></el-input>
       </el-form-item>
     </el-form>
-    <span slot="footer" class="dialog-footer">
-      <el-button @click="visible = false">取消</el-button>
-      <el-button type="primary" @click="dataFormSubmit()">确定</el-button>
-    </span>
+    <template slot="footer">
+      <el-button @click="visible = false">{{ $t('cancel') }}</el-button>
+      <el-button type="primary" @click="dataFormSubmitHandle()">{{ $t('confirm') }}</el-button>
+    </template>
   </el-dialog>
 </template>
 
 <script>
-  import { clearLoginInfo } from '@/utils'
-  export default {
-    data () {
-      var validateConfirmPassword = (rule, value, callback) => {
-        if (this.dataForm.newPassword !== value) {
-          callback(new Error('确认密码与新密码不一致'))
-        } else {
-          callback()
-        }
-      }
-      return {
-        visible: false,
-        dataForm: {
-          password: '',
-          newPassword: '',
-          confirmPassword: ''
-        },
-        dataRule: {
-          password: [
-            { required: true, message: '原密码不能为空', trigger: 'blur' }
-          ],
-          newPassword: [
-            { required: true, message: '新密码不能为空', trigger: 'blur' }
-          ],
-          confirmPassword: [
-            { required: true, message: '确认密码不能为空', trigger: 'blur' },
-            { validator: validateConfirmPassword, trigger: 'blur' }
-          ]
-        }
-      }
-    },
-    computed: {
-      userName: {
-        get () { return this.$store.state.user.name }
-      },
-      mainTabs: {
-        get () { return this.$store.state.common.mainTabs },
-        set (val) { this.$store.commit('common/updateMainTabs', val) }
-      }
-    },
-    methods: {
-      // 初始化
-      init () {
-        this.visible = true
-        this.$nextTick(() => {
-          this.$refs['dataForm'].resetFields()
-        })
-      },
-      // 表单提交
-      dataFormSubmit () {
-        this.$refs['dataForm'].validate((valid) => {
-          if (valid) {
-            this.$http({
-              url: this.$http.adornUrl('/sys/user/password'),
-              method: 'post',
-              data: this.$http.adornData({
-                'password': this.dataForm.password,
-                'newPassword': this.dataForm.newPassword
-              })
-            }).then(({data}) => {
-              if (data && data.code === 0) {
-                this.$message({
-                  message: '操作成功',
-                  type: 'success',
-                  duration: 1500,
-                  onClose: () => {
-                    this.visible = false
-                    this.$nextTick(() => {
-                      this.mainTabs = []
-                      clearLoginInfo()
-                      this.$router.replace({ name: 'login' })
-                    })
-                  }
-                })
-              } else {
-                this.$message.error(data.msg)
-              }
-            })
-          }
-        })
+import debounce from 'lodash/debounce'
+import { clearLoginInfo } from '@/utils'
+export default {
+  data () {
+    return {
+      visible: false,
+      dataForm: {
+        password: '',
+        newPassword: '',
+        confirmPassword: ''
       }
     }
+  },
+  computed: {
+    dataRule () {
+      var validateConfirmPassword = (rule, value, callback) => {
+        if (this.dataForm.newPassword !== value) {
+          return callback(new Error(this.$t('updatePassword.validate.confirmPassword')))
+        }
+        callback()
+      }
+      return {
+        password: [
+          { required: true, message: this.$t('validate.required'), trigger: 'blur' }
+        ],
+        newPassword: [
+          { required: true, message: this.$t('validate.required'), trigger: 'blur' }
+        ],
+        confirmPassword: [
+          { required: true, message: this.$t('validate.required'), trigger: 'blur' },
+          { validator: validateConfirmPassword, trigger: 'blur' }
+        ]
+      }
+    }
+  },
+  methods: {
+    init () {
+      this.visible = true
+      this.$nextTick(() => {
+        this.$refs['dataForm'].resetFields()
+      })
+    },
+    // 表单提交
+    dataFormSubmitHandle: debounce(function () {
+      this.$refs['dataForm'].validate((valid) => {
+        if (!valid) {
+          return false
+        }
+        this.$http.put('/sys/user/password', this.dataForm).then(({ data: res }) => {
+          if (res.code !== 0) {
+            return this.$message.error(res.msg)
+          }
+          this.$message({
+            message: this.$t('prompt.success'),
+            type: 'success',
+            duration: 500,
+            onClose: () => {
+              this.visible = false
+              clearLoginInfo()
+              this.$router.replace({ name: 'login' })
+            }
+          })
+        }).catch(() => {})
+      })
+    }, 1000, { 'leading': true, 'trailing': false })
   }
+}
 </script>
-

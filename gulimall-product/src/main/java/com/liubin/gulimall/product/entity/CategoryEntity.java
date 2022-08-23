@@ -31,6 +31,7 @@ public class CategoryEntity implements Serializable {
 	/**
 	 * 分类名称
 	 */
+	@TableField("name")
 	private String name;
 	/**
 	 * 父分类id

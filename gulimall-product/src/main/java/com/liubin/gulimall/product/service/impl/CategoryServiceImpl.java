@@ -1,5 +1,6 @@
 package com.liubin.gulimall.product.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
@@ -17,6 +18,7 @@ import com.liubin.common.utils.Query;
 import com.liubin.gulimall.product.dao.CategoryDao;
 import com.liubin.gulimall.product.entity.CategoryEntity;
 import com.liubin.gulimall.product.service.CategoryService;
+import org.springframework.util.CollectionUtils;
 
 
 @Service("categoryService")
@@ -43,6 +45,34 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public String saveCategory(CategoryEntity category) {
+        // 查询分类名称重复
+        LambdaQueryWrapper<CategoryEntity> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(CategoryEntity::getName, category.getName());
+        queryWrapper.eq(CategoryEntity::getShowStatus, category.getShowStatus());
+        List<CategoryEntity> categoryList = this.list(queryWrapper);
+        if (!CollectionUtils.isEmpty(categoryList)) {
+            return "分类已存在";
+        }
+        this.save(category);
+        return null;
+    }
+
+    @Override
+    public String updateCategory(CategoryEntity category) {
+        // 查询分类名称重复
+        LambdaQueryWrapper<CategoryEntity> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(CategoryEntity::getName, category.getName());
+        queryWrapper.eq(CategoryEntity::getShowStatus, category.getShowStatus());
+        queryWrapper.ne(CategoryEntity::getCatId, category.getCatId());
+        List<CategoryEntity> categoryList = this.list(queryWrapper);
+        if (!CollectionUtils.isEmpty(categoryList)) {
+            return "分类已存在";
+        }
+        this.updateById(category);
+        return null;
+    }
 
     private List<CategoryEntity> getChildren(CategoryEntity node, List<CategoryEntity> all) {
         return all.stream()

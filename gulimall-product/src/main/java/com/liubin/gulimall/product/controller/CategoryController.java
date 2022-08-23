@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -63,8 +64,16 @@ public class CategoryController {
      */
     @RequestMapping("/save")
     public R save(@RequestBody CategoryEntity category){
-		categoryService.save(category);
+		String msg = categoryService.saveCategory(category);
+        if (StringUtils.isNoneBlank(msg)) {
+            return R.error(msg);
+        }
+        return R.ok();
+    }
 
+    @PostMapping("update/sort")
+    public R updateSort(@RequestBody CategoryEntity[] category) {
+        categoryService.updateBatchById(Arrays.asList(category));
         return R.ok();
     }
 
@@ -73,8 +82,10 @@ public class CategoryController {
      */
     @RequestMapping("/update")
     public R update(@RequestBody CategoryEntity category){
-		categoryService.updateById(category);
-
+        String msg = categoryService.updateCategory(category);
+        if (StringUtils.isNoneBlank(msg)) {
+            return R.error(msg);
+        }
         return R.ok();
     }
 

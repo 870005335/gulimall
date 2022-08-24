@@ -6,7 +6,7 @@
  * 版权所有，侵权必究！
  */
 
-package com.liubin.common.utils;
+package com.liubin.gulimall.common.utils;
 
 
 /**

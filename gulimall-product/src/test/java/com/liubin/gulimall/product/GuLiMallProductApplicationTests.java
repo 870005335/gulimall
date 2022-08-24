@@ -16,8 +16,6 @@ class GuLiMallProductApplicationTests {
 
     @Test
     void contextLoads() {
-        List<BrandEntity> list = brandService.list();
-        System.out.println(list);
     }
 
 }

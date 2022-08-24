@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.liubin.gulimall.product.entity.BrandEntity;
 import com.liubin.gulimall.product.service.BrandService;
-import com.liubin.common.utils.PageUtils;
-import com.liubin.common.utils.R;
+import com.liubin.gulimall.common.utils.PageUtils;
+import com.liubin.gulimall.common.utils.R;
 
 
 

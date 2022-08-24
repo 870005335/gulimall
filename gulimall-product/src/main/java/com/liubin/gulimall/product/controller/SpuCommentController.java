@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.liubin.gulimall.product.entity.SpuCommentEntity;
 import com.liubin.gulimall.product.service.SpuCommentService;
-import com.liubin.common.utils.PageUtils;
-import com.liubin.common.utils.R;
+import com.liubin.gulimall.common.utils.PageUtils;
+import com.liubin.gulimall.common.utils.R;
 
 
 

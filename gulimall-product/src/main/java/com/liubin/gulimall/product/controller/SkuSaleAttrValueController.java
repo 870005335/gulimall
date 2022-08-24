@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.liubin.gulimall.product.entity.SkuSaleAttrValueEntity;
 import com.liubin.gulimall.product.service.SkuSaleAttrValueService;
-import com.liubin.common.utils.PageUtils;
-import com.liubin.common.utils.R;
+import com.liubin.gulimall.common.utils.PageUtils;
+import com.liubin.gulimall.common.utils.R;
 
 
 

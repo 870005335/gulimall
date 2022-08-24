@@ -1,4 +1,4 @@
-package com.liubin.common.utils;
+package com.liubin.gulimall.common.utils;
 
 import java.util.HashMap;
 import java.util.Map;

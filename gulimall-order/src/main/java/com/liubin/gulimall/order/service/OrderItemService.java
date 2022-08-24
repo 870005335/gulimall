@@ -1,7 +1,7 @@
 package com.liubin.gulimall.order.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.liubin.common.utils.PageUtils;
+import com.liubin.gulimall.common.utils.PageUtils;
 import com.liubin.gulimall.order.entity.OrderItemEntity;
 
 import java.util.Map;

@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.liubin.gulimall.member.entity.MemberEntity;
 import com.liubin.gulimall.member.service.MemberService;
-import com.liubin.common.utils.PageUtils;
-import com.liubin.common.utils.R;
+import com.liubin.gulimall.common.utils.PageUtils;
+import com.liubin.gulimall.common.utils.R;
 
 
 

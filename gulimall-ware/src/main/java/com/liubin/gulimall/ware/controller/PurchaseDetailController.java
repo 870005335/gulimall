@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.liubin.gulimall.ware.entity.PurchaseDetailEntity;
 import com.liubin.gulimall.ware.service.PurchaseDetailService;
-import com.liubin.common.utils.PageUtils;
-import com.liubin.common.utils.R;
+import com.liubin.gulimall.common.utils.PageUtils;
+import com.liubin.gulimall.common.utils.R;
 
 
 

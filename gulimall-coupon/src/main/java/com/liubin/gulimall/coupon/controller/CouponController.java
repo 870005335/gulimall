@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.*;
 
 import com.liubin.gulimall.coupon.entity.CouponEntity;
 import com.liubin.gulimall.coupon.service.CouponService;
-import com.liubin.common.utils.PageUtils;
-import com.liubin.common.utils.R;
+import com.liubin.gulimall.common.utils.PageUtils;
+import com.liubin.gulimall.common.utils.R;
 
 
 

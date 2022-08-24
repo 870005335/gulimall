@@ -6,9 +6,9 @@
  * 版权所有，侵权必究！
  */
 
-package com.liubin.common.utils.xss;
+package com.liubin.gulimall.common.utils.xss;
 
-import com.liubin.common.utils.excption.RRException;
+import com.liubin.gulimall.common.utils.excption.RRException;
 import org.apache.commons.lang3.StringUtils;
 
 /**

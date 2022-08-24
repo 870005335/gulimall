@@ -6,13 +6,13 @@
  * 版权所有，侵权必究！
  */
 
-package com.liubin.common.utils;
+package com.liubin.gulimall.common.utils;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.liubin.common.utils.xss.SQLFilter;
+import com.liubin.gulimall.common.utils.xss.SQLFilter;
 
 
 import java.util.Map;

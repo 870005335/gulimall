@@ -30,7 +30,7 @@
   <!-- 开发环境 -->
   <% if (process.env.VUE_APP_NODE_ENV === 'dev') { %>
     <script>
-    window.SITE_CONFIG['apiURL'] = 'http://localhost:8080/renren-admin';
+    window.SITE_CONFIG['apiURL'] = 'http://localhost:80/api';
     </script>
   <% } %>
   <!-- 集成测试环境 -->

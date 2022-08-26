@@ -8,7 +8,7 @@
 
 package com.liubin.gulimall.common.utils.xss;
 
-import com.liubin.gulimall.common.utils.excption.RRException;
+import com.liubin.gulimall.common.exception.RRException;
 import org.apache.commons.lang3.StringUtils;
 
 /**

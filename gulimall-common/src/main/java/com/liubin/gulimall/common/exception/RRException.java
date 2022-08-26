@@ -6,7 +6,7 @@
  * 版权所有，侵权必究！
  */
 
-package com.liubin.gulimall.common.utils.excption;
+package com.liubin.gulimall.common.exception;
 
 /**
  * 自定义异常

@@ -12,8 +12,8 @@
 <!--           <el-input v-model="dataForm.logo" placeholder="品牌logo地址"></el-input>-->
           <single-upload v-model="dataForm.logo"></single-upload>
         </el-form-item>
-        <el-form-item label="介绍" prop="descript">
-          <el-input v-model="dataForm.descript" placeholder="介绍"></el-input>
+        <el-form-item label="介绍" prop="description">
+          <el-input v-model="dataForm.description" placeholder="介绍"></el-input>
         </el-form-item>
         <el-form-item label="显示状态" prop="showStatus">
           <el-switch
@@ -52,7 +52,7 @@ export default {
       dataForm: {
         name: "",
         logo: "",
-        descript: "",
+        description: "",
         firstLetter: "",
         sort: ""
       },
@@ -95,14 +95,14 @@ export default {
       this.dialogVisible = true;
       this.$nextTick(() => {
         this.$refs["dataForm"].resetFields();
-        if (this.dataForm.brandId) {
+        if (this.dataForm.brandId !== 0) {
           this.$http.get(
               `product/brand/info/${this.dataForm.brandId}`
           ).then(({data: res}) => {
             if (res.code === 0) {
               this.dataForm.name = res.brand.name;
               this.dataForm.logo = res.brand.logo;
-              this.dataForm.descript = res.brand.descript;
+              this.dataForm.description = res.brand.description;
               this.dataForm.showStatus = res.brand.showStatus;
               this.dataForm.firstLetter = res.brand.firstLetter;
               this.dataForm.sort = res.brand.sort;
@@ -114,7 +114,7 @@ export default {
       })
     },
     dataFormSubmit() {
-      this.$refs["dataForm"].validate(valid => {
+      this.$refs.dataForm.validate(valid => {
         if (valid) {
           this.$http.post(
               `product/brand/${this.dataForm.brandId === 0? "save" : "update"}`,
@@ -122,7 +122,7 @@ export default {
                 brandId: this.dataForm.brandId,
                 name: this.dataForm.name,
                 logo: this.dataForm.logo,
-                descript: this.dataForm.descript,
+                description: this.dataForm.description,
                 showStatus: this.dataForm.showStatus,
                 firstLetter: this.dataForm.firstLetter,
                 sort: this.dataForm.sort

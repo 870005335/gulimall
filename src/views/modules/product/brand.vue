@@ -11,7 +11,7 @@
         <el-button type="primary" @click="addOrUpdateHandle(brandId)">新增</el-button>
       </el-form-item>
       <el-form-item>
-        <el-button type="danger" :disabled="this.dataListSelections.length === 0" @click="handleDelete(dataListSelections)">批量删除</el-button>
+        <el-button type="danger" :disabled="this.dataListSelections.length === 0" @click="handleDelete">批量删除</el-button>
       </el-form-item>
     </el-form>
     <el-table
@@ -29,7 +29,7 @@
           <img :src="row.logo" style="width: 100px; height: 80px"  :alt="row.name"/>
         </template>
       </el-table-column>
-      <el-table-column prop="descript" header-align="center" align="center" label="介绍"></el-table-column>
+      <el-table-column prop="description" header-align="center" align="center" label="介绍"></el-table-column>
       <el-table-column prop="showStatus" header-align="center" align="center" label="显示状态">
         <template v-slot="{row}">
           <el-switch
@@ -46,6 +46,7 @@
       <el-table-column prop="sort" header-align="center" align="center" label="排序"></el-table-column>
       <el-table-column fixed="right" header-align="center" align="center" width="250" label="操作">
         <template v-slot="{row}">
+          <el-button type="text" size="small" @click="updateCategoryHandle(row.brandId)">关联分类</el-button>
           <el-button type="text" size="small" @click="addOrUpdateHandle(row.brandId)">修改</el-button>
           <el-button type="text" size="small" @click="handleDelete(row)">删除</el-button>
         </template>
@@ -61,6 +62,40 @@
         layout="total, sizes, prev, pager, next, jumper"
     ></el-pagination>
     <brand-add-or-update v-if="addOrUpdateVisible" ref="addOrUpdate" @refreshDataList="getDataList"></brand-add-or-update>
+    <el-dialog title="关联分类" :visible.sync="categoryRelationDialog.DialogVisible" width="40%">
+      <el-button type="danger"
+                 @click="deleteCateRelationHandle"
+                 :disabled="categoryRelationDialog.batchRemoveSelections.length === 0">
+        批量移除
+      </el-button>
+      <el-popover placement="right-start" v-model="categoryRelationDialog.cateSelectVisible">
+        <category-cascader :categoryPath.sync="categoryPath"></category-cascader>
+        <div style="text-align: right; margin: 0">
+          <el-button size="mini" type="text" @click="handleCategoryCascaderClose">取消</el-button>
+          <el-button type="primary" size="mini" @click="addCategorySelect">确定</el-button>
+        </div>
+        <el-button type="primary" slot="reference">新增关联</el-button>
+      </el-popover>
+      <el-table :data="categoryRelationDialog.tableData" v-loading="categoryRelationDialog.tableDataLoading" style="width: 100%">
+        <el-table-column type="selection" header-align="center" align="center" width="50"></el-table-column>
+        <el-table-column prop="id" label="#"></el-table-column>
+        <el-table-column prop="brandName" label="品牌名"></el-table-column>
+        <el-table-column prop="categoryName" label="分类名"></el-table-column>
+        <el-table-column fixed="right" header-align="center" align="center" label="操作">
+          <template v-slot="{row}">
+            <el-button
+                type="text"
+                size="small"
+                @click="deleteCateRelationHandle(row.id)"
+            >移除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+       <span slot="footer" class="dialog-footer">
+        <el-button @click="categoryRelationDialog.DialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="categoryRelationDialog.DialogVisible = false">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -68,6 +103,7 @@
 // 这里可以导入其他文件（比如：组件，工具 js，第三方插件 js，json 文件，图片文件等等）
 // 例如：import  《组件名称》  from '《组件路径》 ';
 import brandAddOrUpdate from './brand-add-or-update'
+import CategoryCascader from "@/views/modules/common/category-cascader";
 
 export default {
   data () {
@@ -83,11 +119,20 @@ export default {
       },
       dataListSelections:[],
       formData: {},
-      brandId: 0
+      brandId: 0,
+      categoryPath: [],
+      // 关联分类对话框
+      categoryRelationDialog: {
+        DialogVisible: false,
+        tableData: [],
+        tableDataLoading: false,
+        cateSelectVisible: false,
+        batchRemoveSelections: []
+      }
     }
   },
   // import 引入的组件需要注入到对象中才能使用
-  components: {brandAddOrUpdate},
+  components: {brandAddOrUpdate, CategoryCascader},
   props: {},
   // 方法集合
   methods: {
@@ -110,9 +155,9 @@ export default {
         this.dataListLoading = false;
       }).catch(() => this.$message.error("系统异常，查询品牌列表失败"))
     },
-    handleDelete(data) {
-      const ids = Array.isArray(data)? data.map(item => item.brandId) : [data.brandId];
-      this.$confirm(`确定对[id=${ids.join(",")}]进行[${Array.isArray(data) ? "批量删除" : "删除"}]操作?`, "提示", {
+    handleDelete(bandId) {
+      const ids = bandId? [bandId]: this.dataListSelections.map(item => item.brandId);
+      this.$confirm(`确定对[id=${ids.join(",")}]品牌进行[${bandId ?"删除" : "批量删除"}]操作?`, "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
@@ -141,7 +186,7 @@ export default {
     },
     updateShowStatusHandle(data) {
       this.$http.post(
-          "/product/brand/update",
+          "/product/brand/updateShowStatus",
           {brandId : data.brandId, showStatus: data.showStatus}
       ).then(({data : res}) => {
         res.code === 0? this.$message.success("操作成功") : this.$message.error(res.msg);
@@ -154,6 +199,61 @@ export default {
       this.$nextTick(() => {
         this.$refs.addOrUpdate.init(brandId);
       })
+    },
+    getCateRelation() {
+      this.categoryRelationDialog.tableDataLoading=true;
+      this.$http.get(
+          "/product/category/brand/relation/list",
+          {params: {
+              brandId: this.brandId
+            }}
+      ).then(({data: res}) => {
+        if (res.code === 0) {
+          this.categoryRelationDialog.tableData = res.resultList;
+        } else {
+          this.$message.error(res.msg);
+        }
+        this.categoryRelationDialog.tableDataLoading=false;
+      }).catch(() => {});
+    },
+    updateCategoryHandle(brandId) {
+      this.categoryRelationDialog.DialogVisible = true;
+      this.brandId = brandId;
+      this.getCateRelation();
+    },
+    deleteCateRelationHandle(id) {
+      const ids = id?[id]:this.categoryRelationDialog.batchRemoveSelections;
+      this.$confirm(`确定对[id=${ids.join(",")}]进行[${id ?"移除" : "批量移除"}]操作?`, "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      }).then(() => {
+        this.$http.post(
+            "product/category/brand/relation/delete",
+            {data: ids}
+        ).then(({data: res}) => {
+          res.code === 0? this.$message.success("操作成功") : this.$message.error(res.msg);
+          this.getCateRelation();
+        })
+      }).catch(() => {});
+    },
+    handleCategoryCascaderClose() {
+      this.categoryPath=[];
+      this.categoryRelationDialog.cateSelectVisible = false;
+    },
+    addCategorySelect() {
+      this.categoryRelationDialog.cateSelectVisible = false;
+      this.$http.post(
+          "product/category/brand/relation/save",
+          {
+            brandId: this.brandId,
+            categoryId: this.categoryPath[this.categoryPath.length - 1]
+          }
+      ).then(({data: res}) => {
+        res.code === 0?this.$message.success("关联成功"):this.$message.error(res.msg);
+        this.categoryPath = [];
+        this.getCateRelation();
+      }).catch(() => {});
     }
   },
   // 计算属性 类似于 data 概念

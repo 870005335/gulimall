@@ -8,18 +8,18 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.liubin.gulimall.common.utils.PageUtils;
 import com.liubin.gulimall.common.utils.Query;
 
-import com.liubin.gulimall.product.dao.AttrAttrgroupRelationDao;
-import com.liubin.gulimall.product.entity.AttrAttrgroupRelationEntity;
-import com.liubin.gulimall.product.service.AttrAttrgroupRelationService;
+import com.liubin.gulimall.product.dao.AttrGroupRelationDao;
+import com.liubin.gulimall.product.entity.AttrGroupRelationEntity;
+import com.liubin.gulimall.product.service.AttrGroupRelationService;
 
 
-@Service("attrAttrgroupRelationService")
-public class AttrAttrgroupRelationServiceImpl extends ServiceImpl<AttrAttrgroupRelationDao, AttrAttrgroupRelationEntity> implements AttrAttrgroupRelationService {
+@Service("attrGroupRelationService")
+public class AttrGroupRelationServiceImpl extends ServiceImpl<AttrGroupRelationDao, AttrGroupRelationEntity> implements AttrGroupRelationService {
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
-        IPage<AttrAttrgroupRelationEntity> page = this.page(
-                new Query<AttrAttrgroupRelationEntity>().getPage(params),
+        IPage<AttrGroupRelationEntity> page = this.page(
+                new Query<AttrGroupRelationEntity>().getPage(params),
                 new QueryWrapper<>()
         );
 

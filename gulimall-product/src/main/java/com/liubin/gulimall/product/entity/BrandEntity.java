@@ -30,8 +30,7 @@ public class BrandEntity implements Serializable {
 	/**
 	 * 品牌id
 	 */
-	@NotNull(message = "修改必须指定品牌id",groups = {UpdateGroup.class})
-	@Null(message = "新增不能指定id",groups = {AddGroup.class})
+	@NotNull(message = "修改必须指定品牌id",groups = {UpdateGroup.class, UpdateStatusGroup.class})
 	@TableId
 	private Long brandId;
 	/**
@@ -42,13 +41,12 @@ public class BrandEntity implements Serializable {
 	/**
 	 * 品牌logo地址
 	 */
-	@NotBlank(groups = {AddGroup.class})
 	@URL(message = "logo必须是一个合法的url地址",groups={AddGroup.class,UpdateGroup.class})
 	private String logo;
 	/**
 	 * 介绍
 	 */
-	private String descript;
+	private String description;
 	/**
 	 * 显示状态[0-不显示；1-显示]
 	 */

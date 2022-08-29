@@ -1,6 +1,6 @@
 package com.liubin.gulimall.product.dao;
 
-import com.liubin.gulimall.product.entity.AttrAttrgroupRelationEntity;
+import com.liubin.gulimall.product.entity.AttrGroupRelationEntity;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -12,6 +12,6 @@ import org.apache.ibatis.annotations.Mapper;
  * @date 2022-08-12 15:55:28
  */
 @Mapper
-public interface AttrAttrgroupRelationDao extends BaseMapper<AttrAttrgroupRelationEntity> {
+public interface AttrGroupRelationDao extends BaseMapper<AttrGroupRelationEntity> {
 	
 }

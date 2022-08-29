@@ -3,10 +3,7 @@ package com.liubin.gulimall.product.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import org.springframework.stereotype.Service;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -74,6 +71,49 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         return null;
     }
 
+    @Override
+    public List<Long> queryCategoryPath(Long categoryId) {
+        List<Long> categoryPath = new ArrayList<>();
+        findParentPath(categoryId, categoryPath);
+        return categoryPath;
+    }
+
+    @Override
+    public Map<Long, String> getCategoryNameMap(List<Long> categoryIdList) {
+        Map<Long, String> categoryNameMap = new HashMap<>();
+        List<CategoryEntity> categoryList = this.listByIds(categoryIdList);
+        if (!CollectionUtils.isEmpty(categoryList)) {
+            categoryNameMap = categoryList.stream()
+                    .collect(Collectors.toMap(CategoryEntity::getCatId, CategoryEntity::getName));
+        }
+        return categoryNameMap;
+    }
+
+    /**
+     * @Author liubin
+     * @Description 查询分类id路径
+     * @Date 17:01 2022/8/29
+     * @param categoryId
+     * @param categoryPath
+     * @return void
+     **/
+    private void findParentPath(Long categoryId, List<Long> categoryPath) {
+        categoryPath.add(categoryId);
+        CategoryEntity category = this.getById(categoryId);
+        if (category.getParentCid() != 0) {
+            this.findParentPath(category.getParentCid(), categoryPath);
+        }
+        Collections.reverse(categoryPath);
+    }
+
+    /**
+     * @Author liubin
+     * @Description 递归查找子节点
+     * @Date 11:30 2022/8/29
+     * @param node
+     * @param all
+     * @return java.util.List<com.liubin.gulimall.product.entity.CategoryEntity>
+     **/
     private List<CategoryEntity> getChildren(CategoryEntity node, List<CategoryEntity> all) {
         return all.stream()
                 .filter(category -> Objects.equals(category.getParentCid(), node.getCatId()))

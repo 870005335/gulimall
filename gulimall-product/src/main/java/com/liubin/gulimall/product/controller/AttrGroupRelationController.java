@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.liubin.gulimall.product.entity.AttrAttrgroupRelationEntity;
-import com.liubin.gulimall.product.service.AttrAttrgroupRelationService;
+import com.liubin.gulimall.product.entity.AttrGroupRelationEntity;
+import com.liubin.gulimall.product.service.AttrGroupRelationService;
 import com.liubin.gulimall.common.utils.PageUtils;
 import com.liubin.gulimall.common.utils.R;
 
@@ -25,17 +25,17 @@ import com.liubin.gulimall.common.utils.R;
  * @date 2022-08-12 15:55:28
  */
 @RestController
-@RequestMapping("product/attrattrgrouprelation")
-public class AttrAttrgroupRelationController {
+@RequestMapping("product/attr/group/relation")
+public class AttrGroupRelationController {
     @Autowired
-    private AttrAttrgroupRelationService attrAttrgroupRelationService;
+    private AttrGroupRelationService attrGroupRelationService;
 
     /**
      * 列表
      */
     @RequestMapping("/list")
     public R list(@RequestParam Map<String, Object> params){
-        PageUtils page = attrAttrgroupRelationService.queryPage(params);
+        PageUtils page = attrGroupRelationService.queryPage(params);
 
         return R.ok().put("page", page);
     }
@@ -46,17 +46,17 @@ public class AttrAttrgroupRelationController {
      */
     @RequestMapping("/info/{id}")
     public R info(@PathVariable("id") Long id){
-		AttrAttrgroupRelationEntity attrAttrgroupRelation = attrAttrgroupRelationService.getById(id);
+		AttrGroupRelationEntity attrGroupRelation = attrGroupRelationService.getById(id);
 
-        return R.ok().put("attrAttrgroupRelation", attrAttrgroupRelation);
+        return R.ok().put("attrGroupRelation", attrGroupRelation);
     }
 
     /**
      * 保存
      */
     @RequestMapping("/save")
-    public R save(@RequestBody AttrAttrgroupRelationEntity attrAttrgroupRelation){
-		attrAttrgroupRelationService.save(attrAttrgroupRelation);
+    public R save(@RequestBody AttrGroupRelationEntity attrGroupRelation){
+		attrGroupRelationService.save(attrGroupRelation);
 
         return R.ok();
     }
@@ -65,8 +65,8 @@ public class AttrAttrgroupRelationController {
      * 修改
      */
     @RequestMapping("/update")
-    public R update(@RequestBody AttrAttrgroupRelationEntity attrAttrgroupRelation){
-		attrAttrgroupRelationService.updateById(attrAttrgroupRelation);
+    public R update(@RequestBody AttrGroupRelationEntity attrGroupRelation){
+		attrGroupRelationService.updateById(attrGroupRelation);
 
         return R.ok();
     }
@@ -76,7 +76,7 @@ public class AttrAttrgroupRelationController {
      */
     @RequestMapping("/delete")
     public R delete(@RequestBody Long[] ids){
-		attrAttrgroupRelationService.removeByIds(Arrays.asList(ids));
+		attrGroupRelationService.removeByIds(Arrays.asList(ids));
 
         return R.ok();
     }

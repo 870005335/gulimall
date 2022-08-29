@@ -43,5 +43,23 @@ public interface CategoryService extends IService<CategoryEntity> {
      * @return java.lang.String
      **/
     String updateCategory(CategoryEntity category);
+
+    /**
+     * @Author liubin
+     * @Description 查询三级分类路径
+     * @Date 11:29 2022/8/29 
+     * @param categoryId
+     * @return java.util.List<java.lang.Integer>
+     **/
+    List<Long> queryCategoryPath(Long categoryId);
+
+    /**
+     * @Author liubin
+     * @Description 根据Id列表查询分类名称映射
+     * @Date 17:01 2022/8/29
+     * @param categoryIdList
+     * @return java.util.Map<java.lang.Long,java.lang.String>
+     **/
+    Map<Long, String> getCategoryNameMap(List<Long> categoryIdList);
 }
 

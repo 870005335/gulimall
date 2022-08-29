@@ -1,6 +1,7 @@
 package com.liubin.gulimall.product.controller;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 
@@ -26,7 +27,7 @@ import com.liubin.gulimall.common.utils.R;
  * @date 2022-08-12 15:55:29
  */
 @RestController
-@RequestMapping("product/categorybrandrelation")
+@RequestMapping("product/category/brand/relation")
 public class CategoryBrandRelationController {
     @Autowired
     private CategoryBrandRelationService categoryBrandRelationService;
@@ -36,9 +37,9 @@ public class CategoryBrandRelationController {
      */
     @RequestMapping("/list")
     public R list(@RequestParam Map<String, Object> params){
-        PageUtils page = categoryBrandRelationService.queryPage(params);
+       List<CategoryBrandRelationEntity> resultList = categoryBrandRelationService.queryList(params);
 
-        return R.ok().put("page", page);
+        return R.ok().put("resultList", resultList);
     }
 
 

@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 
 import java.io.Serializable;
-import java.util.Date;
+
 import lombok.Data;
 
 /**
@@ -15,8 +15,8 @@ import lombok.Data;
  * @date 2022-08-12 15:55:28
  */
 @Data
-@TableName("pms_attr_attrgroup_relation")
-public class AttrAttrgroupRelationEntity implements Serializable {
+@TableName("pms_attr_group_relation")
+public class AttrGroupRelationEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/**

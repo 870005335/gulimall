@@ -25,7 +25,7 @@ import com.liubin.gulimall.common.utils.R;
  * @date 2022-08-12 15:55:28
  */
 @RestController
-@RequestMapping("product/attrgroup")
+@RequestMapping("product/attr/group")
 public class AttrGroupController {
     @Autowired
     private AttrGroupService attrGroupService;
@@ -33,9 +33,10 @@ public class AttrGroupController {
     /**
      * 列表
      */
-    @RequestMapping("/list")
-    public R list(@RequestParam Map<String, Object> params){
-        PageUtils page = attrGroupService.queryPage(params);
+    @RequestMapping("/list/{catId}")
+    public R list(@RequestParam Map<String, Object> params,
+                  @PathVariable("catId") Long catId){
+        PageUtils page = attrGroupService.queryPage(params, catId);
 
         return R.ok().put("page", page);
     }
@@ -46,7 +47,7 @@ public class AttrGroupController {
      */
     @RequestMapping("/info/{attrGroupId}")
     public R info(@PathVariable("attrGroupId") Long attrGroupId){
-		AttrGroupEntity attrGroup = attrGroupService.getById(attrGroupId);
+		AttrGroupEntity attrGroup = attrGroupService.getAttrGroupById(attrGroupId);
 
         return R.ok().put("attrGroup", attrGroup);
     }
@@ -56,7 +57,7 @@ public class AttrGroupController {
      */
     @RequestMapping("/save")
     public R save(@RequestBody AttrGroupEntity attrGroup){
-		attrGroupService.save(attrGroup);
+		attrGroupService.saveAttrGroup(attrGroup);
 
         return R.ok();
     }
@@ -66,7 +67,7 @@ public class AttrGroupController {
      */
     @RequestMapping("/update")
     public R update(@RequestBody AttrGroupEntity attrGroup){
-		attrGroupService.updateById(attrGroup);
+		attrGroupService.updateAttrGroup(attrGroup);
 
         return R.ok();
     }

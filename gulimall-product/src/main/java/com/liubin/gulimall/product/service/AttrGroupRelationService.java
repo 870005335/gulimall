@@ -2,7 +2,7 @@ package com.liubin.gulimall.product.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.liubin.gulimall.common.utils.PageUtils;
-import com.liubin.gulimall.product.entity.AttrAttrgroupRelationEntity;
+import com.liubin.gulimall.product.entity.AttrGroupRelationEntity;
 
 import java.util.Map;
 
@@ -13,7 +13,7 @@ import java.util.Map;
  * @email 870005335
  * @date 2022-08-12 15:55:28
  */
-public interface AttrAttrgroupRelationService extends IService<AttrAttrgroupRelationEntity> {
+public interface AttrGroupRelationService extends IService<AttrGroupRelationEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
 }

@@ -75,11 +75,18 @@ public class BrandController {
         return R.ok();
     }
 
+    @RequestMapping("/updateShowStatus")
+    public R updateShowStatus(@Validated(UpdateStatusGroup.class) @RequestBody BrandEntity brand){
+        brandService.updateById(brand);
+
+        return R.ok();
+    }
+
     /**
      * 删除
      */
     @RequestMapping("/delete")
-    public R delete(@Validated(UpdateStatusGroup.class) @RequestBody Long[] brandIds){
+    public R delete(@RequestBody Long[] brandIds){
 		brandService.removeByIds(Arrays.asList(brandIds));
 
         return R.ok();

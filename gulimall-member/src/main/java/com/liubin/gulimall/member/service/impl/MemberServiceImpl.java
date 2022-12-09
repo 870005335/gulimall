@@ -1,5 +1,6 @@
 package com.liubin.gulimall.member.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import org.springframework.stereotype.Service;
 import java.util.Map;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -18,9 +19,11 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, MemberEntity> impl
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
+        LambdaQueryWrapper<MemberEntity> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(params.get("key") != null, MemberEntity::getUsername, params.get("key"));
         IPage<MemberEntity> page = this.page(
                 new Query<MemberEntity>().getPage(params),
-                new QueryWrapper<MemberEntity>()
+                queryWrapper
         );
 
         return new PageUtils(page);

@@ -1,6 +1,7 @@
 package com.liubin.gulimall.product.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.liubin.gulimall.common.exception.GuLiMallException;
 import com.liubin.gulimall.product.service.BrandService;
 import com.liubin.gulimall.product.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ import com.liubin.gulimall.common.utils.Query;
 import com.liubin.gulimall.product.dao.CategoryBrandRelationDao;
 import com.liubin.gulimall.product.entity.CategoryBrandRelationEntity;
 import com.liubin.gulimall.product.service.CategoryBrandRelationService;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 
@@ -45,14 +47,27 @@ public class CategoryBrandRelationServiceImpl extends ServiceImpl<CategoryBrandR
     public List<CategoryBrandRelationEntity> queryList(Map<String, Object> params) {
         LambdaQueryWrapper<CategoryBrandRelationEntity> queryWrapper = new LambdaQueryWrapper<>();
         Object brandId = params.get("brandId");
-        if (brandId != null) {
-            queryWrapper.eq(CategoryBrandRelationEntity::getBrandId, brandId);
-        }
+        Object catId = params.get("catId");
+        queryWrapper.eq(brandId != null, CategoryBrandRelationEntity::getBrandId, brandId)
+                .eq(catId != null, CategoryBrandRelationEntity::getCategoryId, catId);
         List<CategoryBrandRelationEntity> resultList = this.list(queryWrapper);
         if (!CollectionUtils.isEmpty(resultList)) {
             handleResultDataList(resultList);
         }
         return resultList;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void saveCateBrandRelation(CategoryBrandRelationEntity categoryBrandRelation) {
+        // 查询是否已经存在关联关系
+        List<CategoryBrandRelationEntity> relationList = this.list(new LambdaQueryWrapper<CategoryBrandRelationEntity>()
+                .eq(CategoryBrandRelationEntity::getBrandId, categoryBrandRelation.getBrandId())
+                .eq(CategoryBrandRelationEntity::getCategoryId, categoryBrandRelation.getCategoryId()));
+        if (!CollectionUtils.isEmpty(relationList)) {
+            throw new GuLiMallException("该分类已与品牌存在关联关系");
+        }
+        this.save(categoryBrandRelation);
     }
 
     /**

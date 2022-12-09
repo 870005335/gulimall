@@ -25,7 +25,7 @@ import com.liubin.gulimall.common.utils.R;
  * @date 2022-08-15 16:44:00
  */
 @RestController
-@RequestMapping("member/memberlevel")
+@RequestMapping("member/member/level")
 public class MemberLevelController {
     @Autowired
     private MemberLevelService memberLevelService;

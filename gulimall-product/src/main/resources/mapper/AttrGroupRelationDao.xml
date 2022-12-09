@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.liubin.gulimall.product.dao.AttrGroupRelationDao">
+
+
+    <select id="getAttrGroupListByAttrIds" resultType="com.liubin.gulimall.product.entity.AttrGroupRelationEntity">
+        SELECT relation.attr_id attrId, relation.attr_group_id attrGroupId,
+               relation.attr_sort attrSort,attr_group.attr_group_name attrGroupName
+        FROM pms_attr_group_relation relation
+        JOIN pms_attr_group attr_group
+        ON relation.attr_group_id = attr_group.attr_group_id
+        WHERE relation.attr_id IN
+        <foreach collection="attrIds" item="attrId" index="index" open="(" close=")" separator=",">
+            #{attrId}
+        </foreach>
+    </select>
+
+    <select id="queryAttrsByGroupIds" resultType="com.liubin.gulimall.product.entity.AttrEntity">
+        SELECT relation.attr_id attrId, relation.attr_group_id attrGroupId, attr.attr_name attrName,
+               attr.search_type searchType, attr.value_type valueType, attr.value_select valueSelect,
+               attr.attr_type attrType, attr.show_desc showDesc
+        FROM pms_attr_group_relation relation
+        JOIN pms_attr attr
+        ON relation.attr_id = attr.attr_id
+        WHERE relation.attr_group_id IN
+        <foreach collection="groupIdList" item="groupId" index="index" open="(" close=")" separator=",">
+            #{groupId}
+        </foreach>
+    </select>
+</mapper>

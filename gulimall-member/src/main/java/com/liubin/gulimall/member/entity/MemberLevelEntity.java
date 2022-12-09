@@ -48,15 +48,15 @@ public class MemberLevelEntity implements Serializable {
 	/**
 	 * 是否有免邮特权
 	 */
-	private Integer priviledgeFreeFreight;
+	private Integer privilegeFreeFreight;
 	/**
 	 * 是否有会员价格特权
 	 */
-	private Integer priviledgeMemberPrice;
+	private Integer privilegeMemberPrice;
 	/**
 	 * 是否有生日特权
 	 */
-	private Integer priviledgeBirthday;
+	private Integer privilegeBirthday;
 	/**
 	 * 备注
 	 */

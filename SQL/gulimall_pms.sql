@@ -1,285 +1,244 @@
-drop table if exists pms_attr;
+/*
+ Navicat Premium Data Transfer
 
-drop table if exists pms_attr_attrgroup_relation;
+ Source Server         : mysql（docker）
+ Source Server Type    : MySQL
+ Source Server Version : 50736
+ Source Host           : 192.168.56.102:3306
+ Source Schema         : gulimall_pms
 
-drop table if exists pms_attr_group;
+ Target Server Type    : MySQL
+ Target Server Version : 50736
+ File Encoding         : 65001
 
-drop table if exists pms_brand;
+ Date: 21/09/2022 11:08:36
+*/
 
-drop table if exists pms_category;
+SET NAMES utf8mb4;
+SET FOREIGN_KEY_CHECKS = 0;
 
-drop table if exists pms_category_brand_relation;
+-- ----------------------------
+-- Table structure for pms_attr
+-- ----------------------------
+DROP TABLE IF EXISTS `pms_attr`;
+CREATE TABLE `pms_attr`  (
+                             `attr_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '属性id',
+                             `attr_name` char(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '属性名',
+                             `search_type` tinyint(4) NULL DEFAULT NULL COMMENT '是否需要检索[0-不需要，1-需要]',
+                             `value_type` tinyint(4) NULL DEFAULT NULL COMMENT '值类型[0-为单个值，1-可以选择多个值]',
+                             `icon` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '属性图标',
+                             `value_select` char(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '可选值列表[用逗号分隔]',
+                             `attr_type` tinyint(4) NULL DEFAULT NULL COMMENT '属性类型[0-销售属性，1-基本属性，2-既是销售属性又是基本属性]',
+                             `enable` bigint(20) NULL DEFAULT NULL COMMENT '启用状态[0 - 禁用，1 - 启用]',
+                             `category_id` bigint(20) NULL DEFAULT NULL COMMENT '所属分类',
+                             `show_desc` tinyint(4) NULL DEFAULT NULL COMMENT '快速展示【是否展示在介绍上；0-否 1-是】，在sku中仍然可以调整',
+                             PRIMARY KEY (`attr_id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '商品属性' ROW_FORMAT = Dynamic;
 
-drop table if exists pms_comment_replay;
+-- ----------------------------
+-- Table structure for pms_attr_group
+-- ----------------------------
+DROP TABLE IF EXISTS `pms_attr_group`;
+CREATE TABLE `pms_attr_group`  (
+                                   `attr_group_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '分组id',
+                                   `attr_group_name` char(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '组名',
+                                   `sort` int(11) NULL DEFAULT NULL COMMENT '排序',
+                                   `descript` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '描述',
+                                   `icon` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '组图标',
+                                   `category_id` bigint(20) NULL DEFAULT NULL COMMENT '所属分类id',
+                                   PRIMARY KEY (`attr_group_id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '属性分组' ROW_FORMAT = Dynamic;
 
-drop table if exists pms_product_attr_value;
+-- ----------------------------
+-- Table structure for pms_attr_group_relation
+-- ----------------------------
+DROP TABLE IF EXISTS `pms_attr_group_relation`;
+CREATE TABLE `pms_attr_group_relation`  (
+                                            `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'id',
+                                            `attr_id` bigint(20) NULL DEFAULT NULL COMMENT '属性id',
+                                            `attr_group_id` bigint(20) NULL DEFAULT NULL COMMENT '属性分组id',
+                                            `attr_sort` int(11) NULL DEFAULT NULL COMMENT '属性组内排序',
+                                            PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '属性&属性分组关联' ROW_FORMAT = Dynamic;
 
-drop table if exists pms_sku_images;
+-- ----------------------------
+-- Table structure for pms_brand
+-- ----------------------------
+DROP TABLE IF EXISTS `pms_brand`;
+CREATE TABLE `pms_brand`  (
+                              `brand_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '品牌id',
+                              `name` char(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '品牌名',
+                              `logo` varchar(2000) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '品牌logo地址',
+                              `descript` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL COMMENT '介绍',
+                              `show_status` tinyint(4) NULL DEFAULT NULL COMMENT '显示状态[0-不显示；1-显示]',
+                              `first_letter` char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '检索首字母',
+                              `sort` int(11) NULL DEFAULT NULL COMMENT '排序',
+                              PRIMARY KEY (`brand_id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '品牌' ROW_FORMAT = Dynamic;
 
-drop table if exists pms_sku_info;
+-- ----------------------------
+-- Table structure for pms_category
+-- ----------------------------
+DROP TABLE IF EXISTS `pms_category`;
+CREATE TABLE `pms_category`  (
+                                 `cat_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '分类id',
+                                 `name` char(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '分类名称',
+                                 `parent_cid` bigint(20) NULL DEFAULT NULL COMMENT '父分类id',
+                                 `cat_level` int(11) NULL DEFAULT NULL COMMENT '层级',
+                                 `show_status` tinyint(4) NULL DEFAULT NULL COMMENT '是否显示[0-不显示，1显示]',
+                                 `sort` int(11) NULL DEFAULT NULL COMMENT '排序',
+                                 `icon` char(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '图标地址',
+                                 `product_unit` char(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '计量单位',
+                                 `product_count` int(11) NULL DEFAULT NULL COMMENT '商品数量',
+                                 PRIMARY KEY (`cat_id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1433 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '商品三级分类' ROW_FORMAT = Dynamic;
 
-drop table if exists pms_sku_sale_attr_value;
+-- ----------------------------
+-- Table structure for pms_category_brand_relation
+-- ----------------------------
+DROP TABLE IF EXISTS `pms_category_brand_relation`;
+CREATE TABLE `pms_category_brand_relation`  (
+                                                `id` bigint(20) NOT NULL AUTO_INCREMENT,
+                                                `brand_id` bigint(20) NULL DEFAULT NULL COMMENT '品牌id',
+                                                `category_id` bigint(20) NULL DEFAULT NULL COMMENT '分类id',
+                                                PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '品牌分类关联' ROW_FORMAT = Dynamic;
 
-drop table if exists pms_spu_comment;
+-- ----------------------------
+-- Table structure for pms_comment_replay
+-- ----------------------------
+DROP TABLE IF EXISTS `pms_comment_replay`;
+CREATE TABLE `pms_comment_replay`  (
+                                       `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'id',
+                                       `comment_id` bigint(20) NULL DEFAULT NULL COMMENT '评论id',
+                                       `reply_id` bigint(20) NULL DEFAULT NULL COMMENT '回复id',
+                                       PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '商品评价回复关系' ROW_FORMAT = Dynamic;
 
-drop table if exists pms_spu_images;
+-- ----------------------------
+-- Table structure for pms_product_attr_value
+-- ----------------------------
+DROP TABLE IF EXISTS `pms_product_attr_value`;
+CREATE TABLE `pms_product_attr_value`  (
+                                           `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'id',
+                                           `spu_id` bigint(20) NULL DEFAULT NULL COMMENT '商品id',
+                                           `attr_id` bigint(20) NULL DEFAULT NULL COMMENT '属性id',
+                                           `attr_name` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '属性名',
+                                           `attr_value` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '属性值',
+                                           `attr_sort` int(11) NULL DEFAULT NULL COMMENT '顺序',
+                                           `quick_show` tinyint(4) NULL DEFAULT NULL COMMENT '快速展示【是否展示在介绍上；0-否 1-是】',
+                                           PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = 'spu属性值' ROW_FORMAT = Dynamic;
 
-drop table if exists pms_spu_info;
+-- ----------------------------
+-- Table structure for pms_sku_images
+-- ----------------------------
+DROP TABLE IF EXISTS `pms_sku_images`;
+CREATE TABLE `pms_sku_images`  (
+                                   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'id',
+                                   `sku_id` bigint(20) NULL DEFAULT NULL COMMENT 'sku_id',
+                                   `img_url` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '图片地址',
+                                   `img_sort` int(11) NULL DEFAULT NULL COMMENT '排序',
+                                   `default_img` int(11) NULL DEFAULT NULL COMMENT '默认图[0 - 不是默认图，1 - 是默认图]',
+                                   PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = 'sku图片' ROW_FORMAT = Dynamic;
 
-drop table if exists pms_spu_info_desc;
+-- ----------------------------
+-- Table structure for pms_sku_info
+-- ----------------------------
+DROP TABLE IF EXISTS `pms_sku_info`;
+CREATE TABLE `pms_sku_info`  (
+                                 `sku_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'skuId',
+                                 `spu_id` bigint(20) NULL DEFAULT NULL COMMENT 'spuId',
+                                 `sku_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT 'sku名称',
+                                 `sku_desc` varchar(2000) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT 'sku介绍描述',
+                                 `category_id` bigint(20) NULL DEFAULT NULL COMMENT '所属分类id',
+                                 `brand_id` bigint(20) NULL DEFAULT NULL COMMENT '品牌id',
+                                 `sku_default_img` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '默认图片',
+                                 `sku_title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '标题',
+                                 `sku_subtitle` varchar(2000) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '副标题',
+                                 `price` decimal(18, 4) NULL DEFAULT NULL COMMENT '价格',
+                                 `sale_count` bigint(20) NULL DEFAULT NULL COMMENT '销量',
+                                 PRIMARY KEY (`sku_id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = 'sku信息' ROW_FORMAT = Dynamic;
 
-/*==============================================================*/
-/* Table: pms_attr                                              */
-/*==============================================================*/
-create table pms_attr
-(
-   attr_id              bigint not null auto_increment comment '属性id',
-   attr_name            char(30) comment '属性名',
-   search_type          tinyint comment '是否需要检索[0-不需要，1-需要]',
-  `value_type` tinyint(4) DEFAULT NULL COMMENT '值类型[0-为单个值，1-可以选择多个值]',
-  `icon` varchar(255) DEFAULT NULL COMMENT '属性图标',
-  `value_select` char(255) DEFAULT NULL COMMENT '可选值列表[用逗号分隔]',
-  `attr_type` tinyint(4) DEFAULT NULL COMMENT '属性类型[0-销售属性，1-基本属性，2-既是销售属性又是基本属性]',
-   enable               bigint comment '启用状态[0 - 禁用，1 - 启用]',
-   catelog_id           bigint comment '所属分类',
-   show_desc            tinyint comment '快速展示【是否展示在介绍上；0-否 1-是】，在sku中仍然可以调整',
-   primary key (attr_id)
-);
+-- ----------------------------
+-- Table structure for pms_sku_sale_attr_value
+-- ----------------------------
+DROP TABLE IF EXISTS `pms_sku_sale_attr_value`;
+CREATE TABLE `pms_sku_sale_attr_value`  (
+                                            `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'id',
+                                            `sku_id` bigint(20) NULL DEFAULT NULL COMMENT 'sku_id',
+                                            `attr_id` bigint(20) NULL DEFAULT NULL COMMENT 'attr_id',
+                                            `attr_name` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '销售属性名',
+                                            `attr_value` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '销售属性值',
+                                            `attr_sort` int(11) NULL DEFAULT NULL COMMENT '顺序',
+                                            PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = 'sku销售属性&值' ROW_FORMAT = Dynamic;
 
-alter table pms_attr comment '商品属性';
+-- ----------------------------
+-- Table structure for pms_spu_comment
+-- ----------------------------
+DROP TABLE IF EXISTS `pms_spu_comment`;
+CREATE TABLE `pms_spu_comment`  (
+                                    `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'id',
+                                    `sku_id` bigint(20) NULL DEFAULT NULL COMMENT 'sku_id',
+                                    `spu_id` bigint(20) NULL DEFAULT NULL COMMENT 'spu_id',
+                                    `spu_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '商品名字',
+                                    `member_nick_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '会员昵称',
+                                    `star` tinyint(1) NULL DEFAULT NULL COMMENT '星级',
+                                    `member_ip` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '会员ip',
+                                    `create_time` datetime(0) NULL DEFAULT NULL COMMENT '创建时间',
+                                    `show_status` tinyint(1) NULL DEFAULT NULL COMMENT '显示状态[0-不显示，1-显示]',
+                                    `spu_attributes` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '购买时属性组合',
+                                    `likes_count` int(11) NULL DEFAULT NULL COMMENT '点赞数',
+                                    `reply_count` int(11) NULL DEFAULT NULL COMMENT '回复数',
+                                    `resources` varchar(1000) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '评论图片/视频[json数据；[{type:文件类型,url:资源路径}]]',
+                                    `content` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL COMMENT '内容',
+                                    `member_icon` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '用户头像',
+                                    `comment_type` tinyint(4) NULL DEFAULT NULL COMMENT '评论类型[0 - 对商品的直接评论，1 - 对评论的回复]',
+                                    PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '商品评价' ROW_FORMAT = Dynamic;
 
-/*==============================================================*/
-/* Table: pms_attr_attrgroup_relation                           */
-/*==============================================================*/
-create table pms_attr_attrgroup_relation
-(
-   id                   bigint not null auto_increment comment 'id',
-   attr_id              bigint comment '属性id',
-   attr_group_id        bigint comment '属性分组id',
-   attr_sort            int comment '属性组内排序',
-   primary key (id)
-);
+-- ----------------------------
+-- Table structure for pms_spu_images
+-- ----------------------------
+DROP TABLE IF EXISTS `pms_spu_images`;
+CREATE TABLE `pms_spu_images`  (
+                                   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'id',
+                                   `spu_id` bigint(20) NULL DEFAULT NULL COMMENT 'spu_id',
+                                   `img_name` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '图片名',
+                                   `img_url` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '图片地址',
+                                   `img_sort` int(11) NULL DEFAULT NULL COMMENT '顺序',
+                                   `default_img` tinyint(4) NULL DEFAULT NULL COMMENT '是否默认图',
+                                   PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = 'spu图片' ROW_FORMAT = Dynamic;
 
-alter table pms_attr_attrgroup_relation comment '属性&属性分组关联';
+-- ----------------------------
+-- Table structure for pms_spu_info
+-- ----------------------------
+DROP TABLE IF EXISTS `pms_spu_info`;
+CREATE TABLE `pms_spu_info`  (
+                                 `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '商品id',
+                                 `spu_name` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '商品名称',
+                                 `spu_description` varchar(1000) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '商品描述',
+                                 `category_id` bigint(20) NULL DEFAULT NULL COMMENT '所属分类id',
+                                 `brand_id` bigint(20) NULL DEFAULT NULL COMMENT '品牌id',
+                                 `weight` decimal(18, 4) NULL DEFAULT NULL,
+                                 `publish_status` tinyint(4) NULL DEFAULT NULL COMMENT '上架状态[0 - 下架，1 - 上架]',
+                                 `create_time` datetime(0) NULL DEFAULT NULL,
+                                 `update_time` datetime(0) NULL DEFAULT NULL,
+                                 PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = 'spu信息' ROW_FORMAT = Dynamic;
 
-/*==============================================================*/
-/* Table: pms_attr_group                                        */
-/*==============================================================*/
-create table pms_attr_group
-(
-   attr_group_id        bigint not null auto_increment comment '分组id',
-   attr_group_name      char(20) comment '组名',
-   sort                 int comment '排序',
-   descript             varchar(255) comment '描述',
-   icon                 varchar(255) comment '组图标',
-   catelog_id           bigint comment '所属分类id',
-   primary key (attr_group_id)
-);
+-- ----------------------------
+-- Table structure for pms_spu_info_desc
+-- ----------------------------
+DROP TABLE IF EXISTS `pms_spu_info_desc`;
+CREATE TABLE `pms_spu_info_desc`  (
+                                      `spu_id` bigint(20) NOT NULL COMMENT '商品id',
+                                      `description` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL COMMENT '商品介绍',
+                                      PRIMARY KEY (`spu_id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = 'spu信息介绍' ROW_FORMAT = Dynamic;
 
-alter table pms_attr_group comment '属性分组';
-
-/*==============================================================*/
-/* Table: pms_brand                                             */
-/*==============================================================*/
-create table pms_brand
-(
-   brand_id             bigint not null auto_increment comment '品牌id',
-   name                 char(50) comment '品牌名',
-   logo                 varchar(2000) comment '品牌logo地址',
-   descript             longtext comment '介绍',
-   show_status          tinyint comment '显示状态[0-不显示；1-显示]',
-   first_letter         char(1) comment '检索首字母',
-   sort                 int comment '排序',
-   primary key (brand_id)
-);
-
-alter table pms_brand comment '品牌';
-
-/*==============================================================*/
-/* Table: pms_category                                          */
-/*==============================================================*/
-create table pms_category
-(
-   cat_id               bigint not null auto_increment comment '分类id',
-   name                 char(50) comment '分类名称',
-   parent_cid           bigint comment '父分类id',
-   cat_level            int comment '层级',
-   show_status          tinyint comment '是否显示[0-不显示，1显示]',
-   sort                 int comment '排序',
-   icon                 char(255) comment '图标地址',
-   product_unit         char(50) comment '计量单位',
-   product_count        int comment '商品数量',
-   primary key (cat_id)
-);
-
-alter table pms_category comment '商品三级分类';
-
-/*==============================================================*/
-/* Table: pms_category_brand_relation                           */
-/*==============================================================*/
-create table pms_category_brand_relation
-(
-   id                   bigint not null auto_increment,
-   brand_id             bigint comment '品牌id',
-   catelog_id           bigint comment '分类id',
-   brand_name           varchar(255),
-   catelog_name         varchar(255),
-   primary key (id)
-);
-
-alter table pms_category_brand_relation comment '品牌分类关联';
-
-/*==============================================================*/
-/* Table: pms_comment_replay                                    */
-/*==============================================================*/
-create table pms_comment_replay
-(
-   id                   bigint not null auto_increment comment 'id',
-   comment_id           bigint comment '评论id',
-   reply_id             bigint comment '回复id',
-   primary key (id)
-);
-
-alter table pms_comment_replay comment '商品评价回复关系';
-
-/*==============================================================*/
-/* Table: pms_product_attr_value                                */
-/*==============================================================*/
-create table pms_product_attr_value
-(
-   id                   bigint not null auto_increment comment 'id',
-   spu_id               bigint comment '商品id',
-   attr_id              bigint comment '属性id',
-   attr_name            varchar(200) comment '属性名',
-   attr_value           varchar(200) comment '属性值',
-   attr_sort            int comment '顺序',
-   quick_show           tinyint comment '快速展示【是否展示在介绍上；0-否 1-是】',
-   primary key (id)
-);
-
-alter table pms_product_attr_value comment 'spu属性值';
-
-/*==============================================================*/
-/* Table: pms_sku_images                                        */
-/*==============================================================*/
-create table pms_sku_images
-(
-   id                   bigint not null auto_increment comment 'id',
-   sku_id               bigint comment 'sku_id',
-   img_url              varchar(255) comment '图片地址',
-   img_sort             int comment '排序',
-   default_img          int comment '默认图[0 - 不是默认图，1 - 是默认图]',
-   primary key (id)
-);
-
-alter table pms_sku_images comment 'sku图片';
-
-/*==============================================================*/
-/* Table: pms_sku_info                                          */
-/*==============================================================*/
-create table pms_sku_info
-(
-   sku_id               bigint not null auto_increment comment 'skuId',
-   spu_id               bigint comment 'spuId',
-   sku_name             varchar(255) comment 'sku名称',
-   sku_desc             varchar(2000) comment 'sku介绍描述',
-   catalog_id           bigint comment '所属分类id',
-   brand_id             bigint comment '品牌id',
-   sku_default_img      varchar(255) comment '默认图片',
-   sku_title            varchar(255) comment '标题',
-   sku_subtitle         varchar(2000) comment '副标题',
-   price                decimal(18,4) comment '价格',
-   sale_count           bigint comment '销量',
-   primary key (sku_id)
-);
-
-alter table pms_sku_info comment 'sku信息';
-
-/*==============================================================*/
-/* Table: pms_sku_sale_attr_value                               */
-/*==============================================================*/
-create table pms_sku_sale_attr_value
-(
-   id                   bigint not null auto_increment comment 'id',
-   sku_id               bigint comment 'sku_id',
-   attr_id              bigint comment 'attr_id',
-   attr_name            varchar(200) comment '销售属性名',
-   attr_value           varchar(200) comment '销售属性值',
-   attr_sort            int comment '顺序',
-   primary key (id)
-);
-
-alter table pms_sku_sale_attr_value comment 'sku销售属性&值';
-
-/*==============================================================*/
-/* Table: pms_spu_comment                                       */
-/*==============================================================*/
-create table pms_spu_comment
-(
-   id                   bigint not null auto_increment comment 'id',
-   sku_id               bigint comment 'sku_id',
-   spu_id               bigint comment 'spu_id',
-   spu_name             varchar(255) comment '商品名字',
-   member_nick_name     varchar(255) comment '会员昵称',
-   star                 tinyint(1) comment '星级',
-   member_ip            varchar(64) comment '会员ip',
-   create_time          datetime comment '创建时间',
-   show_status          tinyint(1) comment '显示状态[0-不显示，1-显示]',
-   spu_attributes       varchar(255) comment '购买时属性组合',
-   likes_count          int comment '点赞数',
-   reply_count          int comment '回复数',
-   resources            varchar(1000) comment '评论图片/视频[json数据；[{type:文件类型,url:资源路径}]]',
-   content              text comment '内容',
-   member_icon          varchar(255) comment '用户头像',
-   comment_type         tinyint comment '评论类型[0 - 对商品的直接评论，1 - 对评论的回复]',
-   primary key (id)
-);
-
-alter table pms_spu_comment comment '商品评价';
-
-/*==============================================================*/
-/* Table: pms_spu_images                                        */
-/*==============================================================*/
-create table pms_spu_images
-(
-   id                   bigint not null auto_increment comment 'id',
-   spu_id               bigint comment 'spu_id',
-   img_name             varchar(200) comment '图片名',
-   img_url              varchar(255) comment '图片地址',
-   img_sort             int comment '顺序',
-   default_img          tinyint comment '是否默认图',
-   primary key (id)
-);
-
-alter table pms_spu_images comment 'spu图片';
-
-/*==============================================================*/
-/* Table: pms_spu_info                                          */
-/*==============================================================*/
-create table pms_spu_info
-(
-   id                   bigint not null auto_increment comment '商品id',
-   spu_name             varchar(200) comment '商品名称',
-   spu_description      varchar(1000) comment '商品描述',
-   catalog_id           bigint comment '所属分类id',
-   brand_id             bigint comment '品牌id',
-   weight               decimal(18,4),
-   publish_status       tinyint comment '上架状态[0 - 下架，1 - 上架]',
-   create_time          datetime,
-   update_time          datetime,
-   primary key (id)
-);
-
-alter table pms_spu_info comment 'spu信息';
-
-/*==============================================================*/
-/* Table: pms_spu_info_desc                                     */
-/*==============================================================*/
-create table pms_spu_info_desc
-(
-   spu_id               bigint not null comment '商品id',
-   decript              longtext comment '商品介绍',
-   primary key (spu_id)
-);
-
-alter table pms_spu_info_desc comment 'spu信息介绍';
+SET FOREIGN_KEY_CHECKS = 1;

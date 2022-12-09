@@ -2,13 +2,22 @@ package com.liubin.gulimall.product.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.liubin.gulimall.common.exception.GuLiMallException;
+import com.liubin.gulimall.product.entity.AttrEntity;
+import com.liubin.gulimall.product.entity.AttrGroupRelationEntity;
+import com.liubin.gulimall.product.service.AttrGroupRelationService;
+import com.liubin.gulimall.product.service.AttrService;
 import com.liubin.gulimall.product.service.CategoryService;
+import com.liubin.gulimall.product.vo.AttrGroupWithAttrsVo;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import java.util.stream.Collectors;
+
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.liubin.gulimall.common.utils.PageUtils;
@@ -25,6 +34,9 @@ public class AttrGroupServiceImpl extends ServiceImpl<AttrGroupDao, AttrGroupEnt
 
     @Autowired
     private CategoryService categoryService;
+
+    @Autowired
+    private AttrGroupRelationService attrGroupRelationService;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params, Long catId) {
@@ -75,5 +87,40 @@ public class AttrGroupServiceImpl extends ServiceImpl<AttrGroupDao, AttrGroupEnt
             throw new GuLiMallException(-1, "分组名称已存在");
         }
         this.updateById(attrGroup);
+    }
+
+    @Override
+    public List<AttrGroupWithAttrsVo> getAttrGroupWithAttrsByCategoryId(Long categoryId) {
+        List<AttrGroupWithAttrsVo> resultList = new ArrayList<>();
+        // 查询分组信息
+        List<AttrGroupEntity> groupList = this.list(new LambdaQueryWrapper<AttrGroupEntity>()
+                .eq(AttrGroupEntity::getCategoryId, categoryId));
+        if (!CollectionUtils.isEmpty(groupList)) {
+            List<Long> groupIdList = groupList.stream()
+                    .map(AttrGroupEntity::getAttrGroupId)
+                    .collect(Collectors.toList());
+            List<AttrEntity> attrs = attrGroupRelationService.queryAttrsByGroupIds(groupIdList);
+            Map<Long, List<AttrEntity>> attrsMap;
+            if (!CollectionUtils.isEmpty(attrs)) {
+                attrsMap = attrs.stream().collect(Collectors.groupingBy(AttrEntity::getAttrGroupId));
+            } else {
+                attrsMap = new HashMap<>();
+            }
+            resultList = groupList.stream().map(group -> {
+                AttrGroupWithAttrsVo attrsVo = new AttrGroupWithAttrsVo();
+                BeanUtils.copyProperties(group, attrsVo);
+                attrsVo.setAttrs(attrsMap.get(group.getAttrGroupId()));
+                return attrsVo;
+            }).collect(Collectors.toList());
+        }
+        return resultList;
+    }
+
+    @Override
+    public void deleteAttrGroups(List<Long> groupIdList) {
+        this.removeBatchByIds(groupIdList);
+        // 移除关联关系
+        this.attrGroupRelationService.remove(new LambdaQueryWrapper<AttrGroupRelationEntity>()
+                .in(AttrGroupRelationEntity::getAttrGroupId, groupIdList));
     }
 }

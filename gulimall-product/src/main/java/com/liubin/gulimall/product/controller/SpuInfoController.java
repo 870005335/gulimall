@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Map;
 
 
+import com.liubin.gulimall.product.vo.SpuSaveVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,7 +27,7 @@ import com.liubin.gulimall.common.utils.R;
  * @date 2022-08-12 15:55:28
  */
 @RestController
-@RequestMapping("product/spuinfo")
+@RequestMapping("product/spu/info")
 public class SpuInfoController {
     @Autowired
     private SpuInfoService spuInfoService;
@@ -56,8 +57,8 @@ public class SpuInfoController {
      * 保存
      */
     @RequestMapping("/save")
-    public R save(@RequestBody SpuInfoEntity spuInfo){
-		spuInfoService.save(spuInfo);
+    public R save(@RequestBody SpuSaveVo vo){
+        spuInfoService.saveSpuInfo(vo);
 
         return R.ok();
     }

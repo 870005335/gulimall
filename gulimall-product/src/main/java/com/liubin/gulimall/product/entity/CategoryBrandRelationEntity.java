@@ -1,11 +1,14 @@
 package com.liubin.gulimall.product.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 
 import java.io.Serializable;
 import java.util.Date;
+
+import com.liubin.gulimall.common.annotations.HandleField;
 import lombok.Data;
 
 /**
@@ -20,7 +23,7 @@ import lombok.Data;
 public class CategoryBrandRelationEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	@TableId
+	@TableId(type=IdType.AUTO)
 	private Long id;
 
 	/**

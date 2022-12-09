@@ -26,7 +26,7 @@ import com.liubin.gulimall.common.utils.R;
  * @date 2022-08-12 15:55:28
  */
 @RestController
-@RequestMapping("product/spuinfodesc")
+@RequestMapping("product/spu/info/desc")
 public class SpuInfoDescController {
     @Autowired
     private SpuInfoDescService spuInfoDescService;

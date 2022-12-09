@@ -81,10 +81,12 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
     @Override
     public Map<Long, String> getCategoryNameMap(List<Long> categoryIdList) {
         Map<Long, String> categoryNameMap = new HashMap<>();
-        List<CategoryEntity> categoryList = this.listByIds(categoryIdList);
-        if (!CollectionUtils.isEmpty(categoryList)) {
-            categoryNameMap = categoryList.stream()
-                    .collect(Collectors.toMap(CategoryEntity::getCatId, CategoryEntity::getName));
+        if (!CollectionUtils.isEmpty(categoryIdList)) {
+            List<CategoryEntity> categoryList = this.listByIds(categoryIdList);
+            if (!CollectionUtils.isEmpty(categoryList)) {
+                categoryNameMap = categoryList.stream()
+                        .collect(Collectors.toMap(CategoryEntity::getCatId, CategoryEntity::getName));
+            }
         }
         return categoryNameMap;
     }

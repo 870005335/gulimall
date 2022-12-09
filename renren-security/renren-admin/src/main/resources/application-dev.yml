@@ -3,7 +3,7 @@ spring:
     druid:
       #MySQL
       driver-class-name: com.mysql.cj.jdbc.Driver
-      url: jdbc:mysql://192.168.1.124:3306/gulimall_admin?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&nullCatalogMeansCurrent=true
+      url: jdbc:mysql://192.168.56.102:3306/gulimall_admin?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&nullCatalogMeansCurrent=true
       username: root
       password: root
       #      #Oracle
@@ -50,8 +50,9 @@ spring:
   cloud:
     nacos:
       discovery:
-        server-addr: 192.168.1.124:8848
+        server-addr: 192.168.56.102:8848
         namespace: gulimall-dev
+        group: gulimall-dev
 
 ##多数据源的配置，需要引用renren-dynamic-datasource
 #dynamic:

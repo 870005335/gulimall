@@ -25,7 +25,7 @@ import com.liubin.gulimall.common.utils.R;
  * @date 2022-08-15 16:44:00
  */
 @RestController
-@RequestMapping("member/membercollectspu")
+@RequestMapping("member/member/collect/spu")
 public class MemberCollectSpuController {
     @Autowired
     private MemberCollectSpuService memberCollectSpuService;

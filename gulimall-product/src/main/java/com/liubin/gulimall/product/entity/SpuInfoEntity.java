@@ -1,5 +1,6 @@
 package com.liubin.gulimall.product.entity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 
@@ -36,7 +37,7 @@ public class SpuInfoEntity implements Serializable {
 	/**
 	 * 所属分类id
 	 */
-	private Long catalogId;
+	private Long categoryId;
 	/**
 	 * 品牌id
 	 */
@@ -58,4 +59,9 @@ public class SpuInfoEntity implements Serializable {
 	 */
 	private Date updateTime;
 
+	@TableField(exist = false)
+	private String categoryName;
+
+	@TableField(exist = false)
+	private String brandName;
 }

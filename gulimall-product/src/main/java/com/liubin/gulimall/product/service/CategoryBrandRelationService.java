@@ -19,5 +19,14 @@ public interface CategoryBrandRelationService extends IService<CategoryBrandRela
     PageUtils queryPage(Map<String, Object> params);
 
     List<CategoryBrandRelationEntity> queryList(Map<String, Object> params);
+
+    /**
+     * @Author liubin
+     * @Description 保存关联关系
+     * @Date 18:12 2022/9/5
+     * @param categoryBrandRelation
+     * @return void
+     **/
+    void saveCateBrandRelation(CategoryBrandRelationEntity categoryBrandRelation);
 }
 

@@ -11,7 +11,7 @@
         <el-button type="primary" @click="addOrUpdateHandle(brandId)">新增</el-button>
       </el-form-item>
       <el-form-item>
-        <el-button type="danger" :disabled="this.dataListSelections.length === 0" @click="handleDelete">批量删除</el-button>
+        <el-button type="danger" :disabled="this.dataListSelections.length === 0" @click="handleDelete()">批量删除</el-button>
       </el-form-item>
     </el-form>
     <el-table
@@ -61,7 +61,7 @@
         :total="pagination.totalPage"
         layout="total, sizes, prev, pager, next, jumper"
     ></el-pagination>
-    <brand-add-or-update v-if="addOrUpdateVisible" ref="addOrUpdate" @refreshDataList="getDataList"></brand-add-or-update>
+    <brand-add-or-update ref="addOrUpdate" @refreshDataList="getDataList"></brand-add-or-update>
     <el-dialog title="关联分类" :visible.sync="categoryRelationDialog.DialogVisible" width="40%">
       <el-button type="danger"
                  @click="deleteCateRelationHandle"
@@ -72,7 +72,7 @@
         <category-cascader :categoryPath.sync="categoryPath"></category-cascader>
         <div style="text-align: right; margin: 0">
           <el-button size="mini" type="text" @click="handleCategoryCascaderClose">取消</el-button>
-          <el-button type="primary" size="mini" @click="addCategorySelect">确定</el-button>
+          <el-button type="primary" size="mini" @click="addCategorySelect" :disabled="isDisabled">确定</el-button>
         </div>
         <el-button type="primary" slot="reference">新增关联</el-button>
       </el-popover>
@@ -109,7 +109,7 @@ export default {
   data () {
     // 这里存放数据
     return {
-      addOrUpdateVisible: false,
+      isDisabled:false,
       dataListLoading: false,
       dataList: [],
       pagination:{
@@ -157,11 +157,14 @@ export default {
     },
     handleDelete(bandId) {
       const ids = bandId? [bandId]: this.dataListSelections.map(item => item.brandId);
-      this.$confirm(`确定对[id=${ids.join(",")}]品牌进行[${bandId ?"删除" : "批量删除"}]操作?`, "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      }).then(() => {
+      this.$confirm(
+          `确定对[id=${ids.join(",")}]品牌进行[${bandId ?"删除" : "批量删除"}]操作?`,
+          "提示",
+          {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning"
+          }).then(() => {
         this.$http.delete(
             "product/brand/delete",
             {data: ids}
@@ -195,7 +198,6 @@ export default {
       }).catch(() => this.$message.error("系统异常，操作失败"))
     },
     addOrUpdateHandle(brandId) {
-      this.addOrUpdateVisible = true;
       this.$nextTick(() => {
         this.$refs.addOrUpdate.init(brandId);
       })
@@ -230,7 +232,7 @@ export default {
       }).then(() => {
         this.$http.post(
             "product/category/brand/relation/delete",
-            {data: ids}
+            ids
         ).then(({data: res}) => {
           res.code === 0? this.$message.success("操作成功") : this.$message.error(res.msg);
           this.getCateRelation();
@@ -242,6 +244,10 @@ export default {
       this.categoryRelationDialog.cateSelectVisible = false;
     },
     addCategorySelect() {
+      this.isDisabled=true
+      setTimeout(()=>{
+        this.isDisabled=false   //点击一次时隔两秒后才能再次点击
+      },2000)
       this.categoryRelationDialog.cateSelectVisible = false;
       this.$http.post(
           "product/category/brand/relation/save",

@@ -1,6 +1,8 @@
 <template>
   <el-row :gutter="20">
-    <el-col :span="6"><category @tree-node-click="treeNodeClick"></category></el-col>
+    <el-col :span="6">
+      <category ref="category" @tree-node-click="treeNodeClick"></category>
+    </el-col>
     <el-col :span="18"><div class="mod-config">
       <el-form :inline="true" :model="dataForm" @keyup.enter.native="getDataList()">
         <el-form-item>
@@ -61,8 +63,10 @@
           :total="pagination.totalPage"
           layout="total, sizes, prev, pager, next, jumper"
       ></el-pagination>
-      <attr-group-add-or-update v-if="addOrUpdateVisible" ref="addOrUpdate" @refreshDataList="getDataList"></attr-group-add-or-update>
-    </div></el-col>
+      <attr-group-add-or-update ref="addOrUpdate" @refreshDataList="getAllDataList"></attr-group-add-or-update>
+      <relation-update ref="relationUpdate" @refreshData="getAllDataList"></relation-update>
+    </div>
+    </el-col>
   </el-row>
 </template>
 
@@ -70,7 +74,8 @@
 // 这里可以导入其他文件（比如：组件，工具 js，第三方插件 js，json 文件，图片文件等等）
 // 例如：import  《组件名称》  from '《组件路径》 ';
 import Category from "@/views/modules/common/category";
-import AttrGroupAddOrUpdate from "@/views/modules/product/attrgroup-add-or-update";
+import AttrGroupAddOrUpdate from "./attr-group-add-or-update";
+import RelationUpdate from "./attr-group-relation"
 
 export default {
   data () {
@@ -87,11 +92,10 @@ export default {
         pageSize: 10,
         totalPage: 0
       },
-      addOrUpdateVisible: false
     }
   },
   // import 引入的组件需要注入到对象中才能使用
-  components: {Category, AttrGroupAddOrUpdate},
+  components: {Category, AttrGroupAddOrUpdate, RelationUpdate},
   props: {},
   // 方法集合
   methods: {
@@ -104,6 +108,7 @@ export default {
       this.catId = 0;
       this.dataForm.key="";
       this.getDataList();
+      this.$refs.category.getMenus();
     },
     getDataList() {
       this.dataListLoading = true;
@@ -125,7 +130,6 @@ export default {
       }).catch(() => this.$message.error("系统异常，查询属性分组列表异常"));
     },
     addOrUpdateHandle(attrGroupId) {
-      this.addOrUpdateVisible = true;
       this.$nextTick(() => {
         this.$refs.addOrUpdate.init(attrGroupId)
       })
@@ -145,17 +149,24 @@ export default {
       ).then(() => {
         this.$http.post(
             "product/attr/group/delete",
-            {data: ids}
+            ids
         ).then(({data: res}) => {
-          res.code === 0?this.$message.success("操作成功") : this.$message.error(res.msg);
+          if (res.code===0) {
+            this.$message.success("操作成功");
+            this.getAllDataList();
+          } else {
+            this.$message.error(res.msg);
+          }
         })
       }).catch(() => {})
     },
     selectionChangeHandle(val) {
       this.dataListSelections = val;
     },
-    relationHandle() {
-
+    relationHandle(attrGroupId) {
+      this.$nextTick(() => {
+        this.$refs.relationUpdate.init(attrGroupId);
+      })
     },
     sizeChangeHandle(val) {
       this.pageSize = val;

@@ -84,7 +84,7 @@
        const _self = this
        return new Promise((resolve, reject) => {
          // 前后端提交post异步请求获取签名信息
-         this.$http.post('/thirdparty/oss/policy')
+         this.$http.post('/gulimall-third-party/oss/policy')
              .then(({data: res}) => {
                _self.dataObj.policy = res.data.policy
                _self.dataObj.signature = res.data.signature

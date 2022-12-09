@@ -87,7 +87,7 @@ export default {
       let _self = this;
       return new Promise((resolve, reject) => {
         // 前后端提交post异步请求获取签名信息
-        this.$http.post('/thirdparty/oss/policy')
+        this.$http.post('/gulimall-third-party/oss/policy')
             .then(response => {
             console.log("这是什么${filename}");
             _self.dataObj.policy = response.data.policy;
@@ -104,6 +104,15 @@ export default {
           });
       });
     },
+
+
+
+
+
+
+
+
+
     handleUploadSuccess(res, file) {
       this.fileList.push({
         name: file.name,

@@ -28,7 +28,7 @@
         <el-input v-model="dataForm.firstLetter" placeholder="检索首字母"></el-input>
         </el-form-item>
         <el-form-item label="排序" prop="sort">
-          <el-input v-model.number="dataForm.sort" placeholder="排序"></el-input>
+          <el-input-number v-model="dataForm.sort" controls-position="right" :min="0" ></el-input-number>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -94,7 +94,7 @@ export default {
       this.dataForm.brandId = brandId;
       this.dialogVisible = true;
       this.$nextTick(() => {
-        this.$refs["dataForm"].resetFields();
+        this.$refs.dataForm.resetFields();
         if (this.dataForm.brandId !== 0) {
           this.$http.get(
               `product/brand/info/${this.dataForm.brandId}`

@@ -57,16 +57,7 @@ export default {
       categoryPath: [],
       dataRule: {
         attrGroupName: [{required: true, message: "组名不能为空", trigger: "blur"}],
-        sort: [{
-          validator: (rule, value, callback) => {
-            if (!Number.isInteger(value) || value < 0) {
-              callback(new Error("排序必须是一个大于等于0的整数"));
-            } else {
-              callback();
-            }
-          },
-          trigger: "blur"
-        }],
+        categoryId: [{required: true, message: "分类不能为空", trigger: "blur"}]
       }
     }
   },

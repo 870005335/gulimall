@@ -14,6 +14,7 @@ import renDeptTree from '@/components/ren-dept-tree'
 import renRegionTree from '@/components/ren-region-tree'
 import { hasPermission, getDictLabel } from '@/utils'
 import cloneDeep from 'lodash/cloneDeep'
+import PubSub from 'pubsub-js'
 
 Vue.config.productionTip = false
 
@@ -31,6 +32,7 @@ Vue.use(renRegionTree)
 Vue.prototype.$http = http
 Vue.prototype.$hasPermission = hasPermission
 Vue.prototype.$getDictLabel = getDictLabel
+Vue.prototype.PubSub = PubSub
 
 // 保存整站vuex本地储存初始状态
 window.SITE_CONFIG['storeState'] = cloneDeep(store.state)

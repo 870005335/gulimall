@@ -32,14 +32,15 @@ export const moduleRoutes = {
   redirect: { name: 'home' },
   meta: { title: '主入口布局' },
   children: [
-    { path: '/home', component: () => import('@/views/modules/home'), name: 'home', meta: { title: '首页', isTab: true } }
+    { path: '/home', component: () => import('@/views/modules/home'), name: 'home', meta: { title: '首页', isTab: true } },
+    { path: '/product-attr-update', component: () => import('@/views/modules/product/attr-update'), name: 'attr-update', meta: { title: '规格维护', isTab: true }}
   ]
 }
 
 export function addDynamicRoute (routeParams, router) {
   // 组装路由名称, 并判断是否已添加, 如是: 则直接跳转
-  var routeName = routeParams.routeName
-  var dynamicRoute = window.SITE_CONFIG['dynamicRoutes'].filter(item => item.name === routeName)[0]
+  const routeName = routeParams.routeName;
+  let dynamicRoute = window.SITE_CONFIG['dynamicRoutes'].filter(item => item.name === routeName)[0];
   if (dynamicRoute) {
     return router.push({ name: routeName, params: routeParams.params })
   }
@@ -104,8 +105,8 @@ router.beforeEach((to, from, next) => {
  * @param {*} pageRoutes 页面路由
  */
 function fnCurrentRouteIsPageRoute (route, pageRoutes = []) {
-  var temp = []
-  for (var i = 0; i < pageRoutes.length; i++) {
+  let temp = [];
+  for (let i = 0; i < pageRoutes.length; i++) {
     if (route.path === pageRoutes[i].path) {
       return true
     }
@@ -122,14 +123,14 @@ function fnCurrentRouteIsPageRoute (route, pageRoutes = []) {
  * @param {*} routes 递归创建的动态(菜单)路由
  */
 function fnAddDynamicMenuRoutes (menuList = [], routes = []) {
-  var temp = []
-  for (var i = 0; i < menuList.length; i++) {
+  let temp = [];
+  for (let i = 0; i < menuList.length; i++) {
     if (menuList[i].children && menuList[i].children.length >= 1) {
       temp = temp.concat(menuList[i].children)
       continue
     }
     // 组装路由
-    var route = {
+    const route = {
       path: '',
       component: null,
       name: '',
@@ -138,7 +139,7 @@ function fnAddDynamicMenuRoutes (menuList = [], routes = []) {
         menuId: menuList[i].id,
         title: menuList[i].name
       }
-    }
+    };
     // eslint-disable-next-line
     let URL = (menuList[i].url || '').replace(/{{([^}}]+)?}}/g, (s1, s2) => eval(s2)) // URL支持{{ window.xxx }}占位符变量
     if (isURL(URL)) {

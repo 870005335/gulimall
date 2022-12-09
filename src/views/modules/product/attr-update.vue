@@ -1,13 +1,12 @@
 <template>
   <div>
-    <el-input placeholder="输入关键字进行过滤" v-model="filterText"></el-input>
-    <el-tree :data="data"
-             :props="defaultProps"
-             :highlight-current = "true"
-             :filter-node-method="filterNode"
-             @node-click="nodeClick"
-             node-key="catId"
-             ref="menuTree"></el-tree>
+   <el-row>
+     <el-col :span="24">
+       <el-card class="box-card">
+         <el-tabs tab-position="left" style="width: 98%"></el-tabs>
+       </el-card>
+     </el-col>
+   </el-row>
   </div>
 </template>
 
@@ -19,11 +18,12 @@ export default {
   data () {
     // 这里存放数据
     return {
-      filterText: "",
-      data: [],
-      defaultProps: {
-        children: "children",
-        label: "name"
+      spuId: 0,
+      categoryId: 0,
+      dataResp: {
+        //后台返回的所有数据
+        attrGroups: [],
+        baseAttrs: []
       }
     }
   },
@@ -32,38 +32,15 @@ export default {
   props: {},
   // 方法集合
   methods: {
-    //树节点过滤
-    filterNode(value, data) {
-      if (!value) return true;
-      return data.name.indexOf(value) !== -1;
-    },
-    getMenus() {
-      this.$http.get(
-          '/product/category/list/tree',
-          {params: {}}
-      ).then(({ data: res }) => {
-        if (res.code === 0) {
-          this.data = res.trees;
-        } else {
-          this.$message.error(res.msg);
-        }
-      }).catch(() => this.$message.error("系统错误"))
-    },
-    nodeClick(data, node, component) {
-      // 树叶节点向父组件发送事件；
-      if (data.catLevel === 3) {
-        this.$emit("tree-node-click", data, node, component);
-      }
+    getQueryParams() {
+      this.spuId = this.$route.query.spuId;
+      this.categoryId = this.$route.query.categoryId;
     }
   },
   // 计算属性 类似于 data 概念
   computed: {},
   // 监控 data 中的数据变化
-  watch: {
-    filterText(val) {
-      this.$refs.menuTree.filter(val);
-    }
-  },
+  watch: {},
   //过滤器
   filters: {},
   // 生命周期 - 创建之前
@@ -71,14 +48,12 @@ export default {
   },
   // 生命周期 - 创建完成（可以访问当前this 实例）
   created () {
-    this.getMenus();
   },
   // 生命周期 - 挂载之前
   beforeMount () {
   },
   // 生命周期 - 挂载完成（可以访问 DOM 元素）
   mounted () {
-
   },
   // 生命周期 - 更新之前
   beforeUpdate () {
@@ -95,6 +70,7 @@ export default {
   // 如果页面有 keep-alive 缓存功能,这个函数会触发
   //进入的时候触发
   activated () {
+    this.getQueryParams();
   },
   //离开的时候触发
   deactivated() {
